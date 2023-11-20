@@ -1,0 +1,2879 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Milky Way and M31 satellites from McConnachie 2012</title>
+		<meta charset=utf-8>
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+		<link rel="stylesheet" href="./main.css">
+		<style>			
+			body { overflow:hidden; margin: 0; }
+			canvas { width: 100%; height: 100%; overflow:hidden }
+			
+			nav { overflow: auto }
+			
+			nav::-webkit-scrollbar {
+				width: 10px;
+				height: 10px;
+			}
+
+			nav::-webkit-scrollbar-track {
+				background-color: #f1f1f1;
+			}
+
+			nav::-webkit-scrollbar-thumb {
+				background-color: #888;
+			}
+			
+			input[type=checkbox] {
+				background-color: black;
+			}
+		</style>
+	</head>
+	
+	<body>
+	
+	<script type=»text/javascript»>
+	document.oncontextmenu = function(){return false;}
+	</script>
+	
+	<!-- Scenes var -->
+	<script>
+	var scene;
+	var isOrbit;
+	var isFly;
+	</script>
+	
+	<!-- Expansive menu -->
+	<div class="page-container">		
+		<nav class="nav">
+			<a href="#" class="nav__link" onclick='navigation()'>
+				<script>
+					// Navigation for the menu
+					{
+						const collapsedClass = "nav--collapsed";
+						const lsKey = "navCollapsed";
+						const nav = document.querySelector(".nav");
+						const navBorder = nav.querySelector(".nav__border");
+						if (localStorage.getItem(lsKey) === "true") {
+							nav.classList.add(collapsedClass);
+						}
+						function navigation(){
+							nav.classList.toggle(collapsedClass);
+							localStorage.setItem(lsKey, nav.classList.contains(collapsedClass));
+						};
+					}
+				</script>
+				<div class="nav__icon-container">
+					<i class="material-icons md-light">menu_open</i>
+				</div>
+				<span class="nav__label">Drop-down Menu</span>
+			</a>
+			<a href="#" class="nav__link" id="milkyway">
+				<div class="nav__icon-container">
+					<i class="material-icons">dashboard</i>
+				</div>
+				<span class="nav__label">Milky Way</span>
+			</a>
+			<a href="#" class="nav__link" id="m31_galaxy">
+				<div class="nav__icon-container">
+					<i class="material-icons">dashboard</i>
+				</div>
+				<span class="nav__label">M31</span>
+			</a>
+			<a href="#" class="nav__link" id="mid_point">
+				<div class="nav__icon-container">
+					<i class="material-icons">dashboard</i>
+				</div>
+				<span class="nav__label">Midpoint</span>
+			</a>
+			<a href="#" class="nav__link" id="free_movement">
+				<div class="nav__icon-container" id="freeIconContainer">
+					<i class="material-icons">language</i>
+				</div>
+				<div class="nav__label" id="freeButton">Orbit Mode</div>
+				<div class="nav__icon-container2">
+				</div>
+			</a>
+			<a href="#" class="nav__link" onclick='reload()'>
+				<script>
+					function reload(){
+						location.reload();
+					};
+				</script>
+				
+				<div class="nav__icon-container">
+					<i class="material-icons md-light">refresh</i>
+				</div>
+				<span class="nav__label">Reload</span>
+			</a>
+			<a href="#" class="nav__link" onclick='alert("Mark the satellites to see them!");'>
+				<div class="nav__icon-container">
+					<i class="material-icons">layers</i>
+				</div>
+				<span class="nav__label">Layers</span>
+				<div class="nav__icon-container2">
+				</div>
+			</a>
+
+			<a href="#" class="nav__link"> 
+				<div class="nav__icon-container">
+					<input type="checkbox" id="select" checked="checked" onclick='toggle(this)'/>
+					<script type="text/javascript">
+						function toggle(source) {
+							var aInputs = document.getElementsByTagName('input');
+							for (var i=0;i<aInputs.length;i++) {
+								if (aInputs[i] != source && aInputs[i].className == source.className && aInputs[i].id !== "show-galaxy-names") {
+									aInputs[i].checked = source.checked;
+								}
+							}
+						}
+					</script> 
+				</div>
+				<span class="nav__label">Select All</span>
+			</a>
+			<a href="#" class="nav__link">
+				<div class="nav__icon-container">
+					<input type="checkbox" id="show-galaxy-names" checked="true" />
+				</div>
+				<span class="nav__label">Show names</span>
+			</a>
+			<a href="#" class="nav__link">
+				<div class="nav__icon-container">
+					<input type="checkbox" id="AndI" checked="true" />
+				</div>
+				<span class="nav__label">And I</span>
+			</a>
+
+			<a href="#" class="nav__link"> 
+				<div class="nav__icon-container">
+					<input type="checkbox" id="AndII" checked="checked" />
+				</div>
+				<span class="nav__label">And II</span>
+			</a>
+			
+			<a href="#" class="nav__link"> 
+				<div class="nav__icon-container">
+					<input type="checkbox" id="AndIII" checked="checked" />
+				</div>
+				<span class="nav__label">And III</span>
+			</a>
+			
+			<a href="#" class="nav__link"> 
+				<div class="nav__icon-container">
+					<input type="checkbox" id="AndIX" checked="checked" />
+				</div>
+				<span class="nav__label">And IX</span>
+			</a>
+			
+			<a href="#" class="nav__link"> 
+				<div class="nav__icon-container">
+					<input type="checkbox" id="AndV" checked="checked" />
+				</div>
+				<span class="nav__label">And V</span>
+			</a>
+			
+			<a href="#" class="nav__link"> 
+				<div class="nav__icon-container">
+					<input type="checkbox" id="AndVI" checked="checked" />
+				</div>
+				<span class="nav__label">And VI</span>
+			</a>
+			
+			<a href="#" class="nav__link"> 
+				<div class="nav__icon-container">
+					<input type="checkbox" id="AndVII" checked="checked" />
+				</div>
+				<span class="nav__label">And VII</span>
+			</a>
+			
+			<a href="#" class="nav__link"> 
+				<div class="nav__icon-container">
+					<input type="checkbox" id="AndX" checked="checked" />
+				</div>
+				<span class="nav__label">And X</span>
+			</a>
+			
+			<a href="#" class="nav__link"> 
+				<div class="nav__icon-container">
+					<input type="checkbox" id="AndXI" checked="checked" />
+				</div>
+				<span class="nav__label">And XI</span>
+			</a>
+			
+			<a href="#" class="nav__link"> 
+				<div class="nav__icon-container">
+					<input type="checkbox" id="AndXII" checked="checked" />
+				</div>
+				<span class="nav__label">And XII</span>
+			</a>
+
+			<a href="#" class="nav__link"> 
+				<div class="nav__icon-container">
+					<input type="checkbox" id="AndXIII" checked="checked" />
+				</div>
+				<span class="nav__label">And XIII</span>
+			</a>
+			
+			<a href="#" class="nav__link"> 
+				<div class="nav__icon-container">
+					<input type="checkbox" id="AndXIV" checked="checked" />
+				</div>
+				<span class="nav__label">And XIV</span>
+			</a>
+			
+			<a href="#" class="nav__link"> 
+				<div class="nav__icon-container">
+					<input type="checkbox" id="AndXIX" checked="checked" />
+				</div>
+				<span class="nav__label">And XIX</span>
+			</a>
+			
+			<a href="#" class="nav__link"> 
+				<div class="nav__icon-container">
+					<input type="checkbox" id="AndXV" checked="checked" />
+				</div>
+				<span class="nav__label">And XV</span>
+			</a>
+			
+			<a href="#" class="nav__link"> 
+				<div class="nav__icon-container">
+					<input type="checkbox" id="AndXVI" checked="checked" />
+				</div>
+				<span class="nav__label">And XVI</span>
+			</a>
+			
+			<a href="#" class="nav__link"> 
+				<div class="nav__icon-container">
+					<input type="checkbox" id="AndXVII" checked="checked" />
+				</div>
+				<span class="nav__label">And XVII</span>
+			</a>
+			
+			<a href="#" class="nav__link"> 
+				<div class="nav__icon-container">
+					<input type="checkbox" id="AndXVIII" checked="checked" />
+				</div>
+				<span class="nav__label">And XVIII</span>
+			</a>
+			
+			<a href="#" class="nav__link"> 
+				<div class="nav__icon-container">
+					<input type="checkbox" id="AndXX" checked="checked" />
+				</div>
+				<span class="nav__label">And XX</span>
+			</a>
+			
+			<a href="#" class="nav__link"> 
+				<div class="nav__icon-container">
+					<input type="checkbox" id="AndXXI" checked="checked" />
+				</div>
+				<span class="nav__label">And XXI</span>
+			</a>
+			
+			<a href="#" class="nav__link"> 
+				<div class="nav__icon-container">
+					<input type="checkbox" id="AndXXII" checked="checked" />
+				</div>
+				<span class="nav__label">And XXII</span>
+			</a>
+			
+			<a href="#" class="nav__link"> 
+				<div class="nav__icon-container">
+					<input type="checkbox" id="AndXXIII" checked="checked" />
+				</div>
+				<span class="nav__label">And XXIII</span>
+			</a>
+			
+			<a href="#" class="nav__link"> 
+				<div class="nav__icon-container">
+					<input type="checkbox" id="AndXXIV" checked="checked" />
+				</div>
+				<span class="nav__label">And XXIV</span>
+			</a>
+			
+			<a href="#" class="nav__link"> 
+				<div class="nav__icon-container">
+					<input type="checkbox" id="AndXXIX" checked="checked" />
+				</div>
+				<span class="nav__label">And XXIX</span>
+			</a>
+			
+			<a href="#" class="nav__link"> 
+				<div class="nav__icon-container">
+					<input type="checkbox" id="AndXXV" checked="checked" />
+				</div>
+				<span class="nav__label">And XXV</span>
+			</a>
+			
+			<a href="#" class="nav__link"> 
+				<div class="nav__icon-container">
+					<input type="checkbox" id="AndXXVI" checked="checked" />
+				</div>
+				<span class="nav__label">And XXVI</span>
+			</a>
+			
+			<a href="#" class="nav__link"> 
+				<div class="nav__icon-container">
+					<input type="checkbox" id="AndXXVII" checked="checked" />
+				</div>
+				<span class="nav__label">And XXVII</span>
+			</a>
+			
+			<a href="#" class="nav__link"> 
+				<div class="nav__icon-container">
+					<input type="checkbox" id="AndXXVIII" checked="checked" />
+				</div>
+				<span class="nav__label">And XXVIII</span>
+			</a>
+			
+			<a href="#" class="nav__link"> 
+				<div class="nav__icon-container">
+					<input type="checkbox" id="AndXXX" checked="checked" />
+				</div>
+				<span class="nav__label">And XXX</span>
+			</a>
+			
+			<a href="#" class="nav__link"> 
+				<div class="nav__icon-container">
+					<input type="checkbox" id="AndXXXI" checked="checked" />
+				</div>
+				<span class="nav__label">And XXXI</span>
+			</a>
+			
+			<a href="#" class="nav__link"> 
+				<div class="nav__icon-container">
+					<input type="checkbox" id="AndXXXII" checked="checked" />
+				</div>
+				<span class="nav__label">And XXXII</span>
+			</a>
+			
+			<a href="#" class="nav__link"> 
+				<div class="nav__icon-container">
+					<input type="checkbox" id="AndXXXIII" checked="checked" />
+				</div>
+				<span class="nav__label">And XXXIII</span>
+			</a>
+			
+			<a href="#" class="nav__link"> 
+				<div class="nav__icon-container">
+					<input type="checkbox" id="Antlia" checked="checked" />
+				</div>
+				<span class="nav__label">Antlia</span>
+			</a>
+			
+			<a href="#" class="nav__link"> 
+				<div class="nav__icon-container">
+					<input type="checkbox" id="Antlia2" checked="checked" />
+				</div>
+				<span class="nav__label">Antlia 2</span>
+			</a>
+			
+			<a href="#" class="nav__link"> 
+				<div class="nav__icon-container">
+					<input type="checkbox" id="AntliaB" checked="checked" />
+				</div>
+				<span class="nav__label">Antlia B</span>
+			</a>
+			
+			<a href="#" class="nav__link"> 
+				<div class="nav__icon-container">
+					<input type="checkbox" id="Aquarius" checked="checked" />
+				</div>
+				<span class="nav__label">Aquarius</span>
+			</a>
+			
+			<a href="#" class="nav__link"> 
+				<div class="nav__icon-container">
+					<input type="checkbox" id="Aquarius2" checked="checked" />
+				</div>
+				<span class="nav__label">Aquarius 2</span>
+			</a>
+			
+			<a href="#" class="nav__link"> 
+				<div class="nav__icon-container">
+					<input type="checkbox" id="Bootes(1)" checked="checked" />
+				</div>
+				<span class="nav__label">Bootes (1)</span>
+			</a>
+			
+			<a href="#" class="nav__link"> 
+				<div class="nav__icon-container">
+					<input type="checkbox" id="Bootes2" checked="checked" />
+				</div>
+				<span class="nav__label">Bootes 2</span>
+			</a>
+			
+			<a href="#" class="nav__link"> 
+				<div class="nav__icon-container">
+					<input type="checkbox" id="Bootes3" checked="checked" />
+				</div>
+				<span class="nav__label">Bootes 3</span>
+			</a>
+			
+			<a href="#" class="nav__link"> 
+				<div class="nav__icon-container">
+					<input type="checkbox" id="Bootes4" checked="checked" />
+				</div>
+				<span class="nav__label">Bootes 4</span>
+			</a>
+			
+			<a href="#" class="nav__link"> 
+				<div class="nav__icon-container">
+					<input type="checkbox" id="CanesVenatici(1)" checked="checked" />
+				</div>
+				<span class="nav__label">Canes Venatici (1)</span>
+			</a>
+			
+			<a href="#" class="nav__link"> 
+				<div class="nav__icon-container">
+					<input type="checkbox" id="CanesVenatici2" checked="checked" />
+				</div>
+				<span class="nav__label">Canes Venatici 2</span>
+			</a>
+			
+			<a href="#" class="nav__link"> 
+				<div class="nav__icon-container">
+					<input type="checkbox" id="CanisMajor" checked="checked" />
+				</div>
+				<span class="nav__label">Canis Major</span>
+			</a>
+			
+			<a href="#" class="nav__link"> 
+				<div class="nav__icon-container">
+					<input type="checkbox" id="Carina" checked="checked" />
+				</div>
+				<span class="nav__label">Carina</span>
+			</a>
+			
+			<a href="#" class="nav__link"> 
+				<div class="nav__icon-container">
+					<input type="checkbox" id="Carina2" checked="checked" />
+				</div>
+				<span class="nav__label">Carina 2</span>
+			</a>
+			
+			<a href="#" class="nav__link"> 
+				<div class="nav__icon-container">
+					<input type="checkbox" id="Carina3" checked="checked" />
+				</div>
+				<span class="nav__label">Carina 3</span>
+			</a>
+			
+			<a href="#" class="nav__link"> 
+				<div class="nav__icon-container">
+					<input type="checkbox" id="Centaurus1" checked="checked" />
+				</div>
+				<span class="nav__label">Centaurus 1</span>
+			</a>
+			
+			<a href="#" class="nav__link"> 
+				<div class="nav__icon-container">
+					<input type="checkbox" id="Cetus" checked="checked" />
+				</div>
+				<span class="nav__label">Cetus</span>
+			</a>
+			
+			<a href="#" class="nav__link"> 
+				<div class="nav__icon-container">
+					<input type="checkbox" id="Cetus2" checked="checked" />
+				</div>
+				<span class="nav__label">Cetus 2</span>
+			</a>
+			
+			<a href="#" class="nav__link"> 
+				<div class="nav__icon-container">
+					<input type="checkbox" id="Cetus3" checked="checked" />
+				</div>
+				<span class="nav__label">Cetus 3</span>
+			</a>
+			
+			<a href="#" class="nav__link"> 
+				<div class="nav__icon-container">
+					<input type="checkbox" id="Columba1" checked="checked" />
+				</div>
+				<span class="nav__label">Columba 1</span>
+			</a>
+			
+			<a href="#" class="nav__link">
+				<div class="nav__icon-container">
+					<input type="checkbox" id="ComaBerenices" checked="true" />
+				</div>
+				<span class="nav__label">Coma Berenices</span>
+			</a>
+
+			<a href="#" class="nav__link"> 
+				<div class="nav__icon-container">
+					<input type="checkbox" id="Crater2" checked="checked" />
+				</div>
+				<span class="nav__label">Crater 2</span>
+			</a>
+			
+			<a href="#" class="nav__link"> 
+				<div class="nav__icon-container">
+					<input type="checkbox" id="DDO113" checked="checked" />
+				</div>
+				<span class="nav__label">DDO113</span>
+			</a>
+			
+			<a href="#" class="nav__link"> 
+				<div class="nav__icon-container">
+					<input type="checkbox" id="DDO125" checked="checked" />
+				</div>
+				<span class="nav__label">DDO125</span>
+			</a>
+			
+			<a href="#" class="nav__link"> 
+				<div class="nav__icon-container">
+					<input type="checkbox" id="DDO190" checked="checked" />
+				</div>
+				<span class="nav__label">DDO190</span>
+			</a>
+			
+			<a href="#" class="nav__link"> 
+				<div class="nav__icon-container">
+					<input type="checkbox" id="DDO99" checked="checked" />
+				</div>
+				<span class="nav__label">DDO99</span>
+			</a>
+			
+			<a href="#" class="nav__link"> 
+				<div class="nav__icon-container">
+					<input type="checkbox" id="DESJ0225+0304" checked="checked" />
+				</div>
+				<span class="nav__label">DESJ0225+0304</span>
+			</a>
+			
+			<a href="#" class="nav__link"> 
+				<div class="nav__icon-container">
+					<input type="checkbox" id="Draco" checked="checked" />
+				</div>
+				<span class="nav__label">Draco</span>
+			</a>
+			
+			<a href="#" class="nav__link"> 
+				<div class="nav__icon-container">
+					<input type="checkbox" id="Draco2" checked="checked" />
+				</div>
+				<span class="nav__label">Draco 2</span>
+			</a>
+			
+			<a href="#" class="nav__link"> 
+				<div class="nav__icon-container">
+					<input type="checkbox" id="Eridanus2" checked="checked" />
+				</div>
+				<span class="nav__label">Eridanus 2</span>
+			</a>
+
+			<a href="#" class="nav__link"> 
+				<div class="nav__icon-container">
+					<input type="checkbox" id="Eridanus3" checked="checked" />
+				</div>
+				<span class="nav__label">Eridanus 3</span>
+			</a>
+			
+			<a href="#" class="nav__link"> 
+				<div class="nav__icon-container">
+					<input type="checkbox" id="ESO294-G010" checked="checked" />
+				</div>
+				<span class="nav__label">ESO294-G010</span>
+			</a>
+			
+			<a href="#" class="nav__link"> 
+				<div class="nav__icon-container">
+					<input type="checkbox" id="ESO410-G005" checked="checked" />
+				</div>
+				<span class="nav__label">ESO410-G005</span>
+			</a>
+			
+			<a href="#" class="nav__link"> 
+				<div class="nav__icon-container">
+					<input type="checkbox" id="Fornax" checked="checked" />
+				</div>
+				<span class="nav__label">Fornax</span>
+			</a>
+			
+			<a href="#" class="nav__link"> 
+				<div class="nav__icon-container">
+					<input type="checkbox" id="GR8" checked="checked" />
+				</div>
+				<span class="nav__label">GR8</span>
+			</a>
+			
+			<a href="#" class="nav__link"> 
+				<div class="nav__icon-container">
+					<input type="checkbox" id="Grus1" checked="checked" />
+				</div>
+				<span class="nav__label">Grus 1</span>
+			</a>
+			
+			<a href="#" class="nav__link"> 
+				<div class="nav__icon-container">
+					<input type="checkbox" id="Grus2" checked="checked" />
+				</div>
+				<span class="nav__label">Grus 2</span>
+			</a>
+			
+			<a href="#" class="nav__link"> 
+				<div class="nav__icon-container">
+					<input type="checkbox" id="Hercules" checked="checked" />
+				</div>
+				<span class="nav__label">Hercules</span>
+			</a>
+			
+			<a href="#" class="nav__link"> 
+				<div class="nav__icon-container">
+					<input type="checkbox" id="HIZSS3(A)" checked="checked" />
+				</div>
+				<span class="nav__label">HIZSS3 (A)</span>
+			</a>
+			
+			<a href="#" class="nav__link"> 
+				<div class="nav__icon-container">
+					<input type="checkbox" id="HIZSS3B" checked="checked" />
+				</div>
+				<span class="nav__label">HIZSS3B</span>
+			</a>
+			
+			<a href="#" class="nav__link"> 
+				<div class="nav__icon-container">
+					<input type="checkbox" id="Horologium1" checked="checked" />
+				</div>
+				<span class="nav__label">Horologium 1</span>
+			</a>
+			
+			<a href="#" class="nav__link"> 
+				<div class="nav__icon-container">
+					<input type="checkbox" id="Horologium2" checked="checked" />
+				</div>
+				<span class="nav__label">Horologium 2</span>
+			</a>
+			
+			<a href="#" class="nav__link"> 
+				<div class="nav__icon-container">
+					<input type="checkbox" id="Hydra1" checked="checked" />
+				</div>
+				<span class="nav__label">Hydra 1</span>
+			</a>
+			
+			<a href="#" class="nav__link"> 
+				<div class="nav__icon-container">
+					<input type="checkbox" id="Hydra2" checked="checked" />
+				</div>
+				<span class="nav__label">Hydra 2</span>
+			</a>
+			
+			<a href="#" class="nav__link"> 
+				<div class="nav__icon-container">
+					<input type="checkbox" id="Hydrus1" checked="checked" />
+				</div>
+				<span class="nav__label">Hydrus 1</span>
+			</a>
+			
+			<a href="#" class="nav__link"> 
+				<div class="nav__icon-container">
+					<input type="checkbox" id="IC10" checked="checked" />
+				</div>
+				<span class="nav__label">IC10</span>
+			</a>
+			
+			<a href="#" class="nav__link"> 
+				<div class="nav__icon-container">
+					<input type="checkbox" id="IC1613" checked="checked" />
+				</div>
+				<span class="nav__label">IC1613</span>
+			</a>
+			
+			<a href="#" class="nav__link"> 
+				<div class="nav__icon-container">
+					<input type="checkbox" id="IC3104" checked="checked" />
+				</div>
+				<span class="nav__label">IC3104</span>
+			</a>
+			
+			<a href="#" class="nav__link"> 
+				<div class="nav__icon-container">
+					<input type="checkbox" id="IC4662" checked="checked" />
+				</div>
+				<span class="nav__label">IC4662</span>
+			</a>
+			
+			<a href="#" class="nav__link"> 
+				<div class="nav__icon-container">
+					<input type="checkbox" id="IC5152" checked="checked" />
+				</div>
+				<span class="nav__label">IC5152</span>
+			</a>
+			
+			<a href="#" class="nav__link"> 
+				<div class="nav__icon-container">
+					<input type="checkbox" id="Indus1" checked="checked" />
+				</div>
+				<span class="nav__label">Indus 1</span>
+			</a>
+			
+			<a href="#" class="nav__link"> 
+				<div class="nav__icon-container">
+					<input type="checkbox" id="Indus2" checked="checked" />
+				</div>
+				<span class="nav__label">Indus 2</span>
+			</a>
+			
+			<a href="#" class="nav__link"> 
+				<div class="nav__icon-container">
+					<input type="checkbox" id="KK258" checked="checked" />
+				</div>
+				<span class="nav__label">KK258</span>
+			</a>
+			
+			<a href="#" class="nav__link"> 
+				<div class="nav__icon-container">
+					<input type="checkbox" id="KKH86" checked="checked" />
+				</div>
+				<span class="nav__label">KKH86</span>
+			</a>
+			
+			<a href="#" class="nav__link"> 
+				<div class="nav__icon-container">
+					<input type="checkbox" id="KKH98" checked="checked" />
+				</div>
+				<span class="nav__label">KKH98</span>
+			</a>
+			
+			<a href="#" class="nav__link"> 
+				<div class="nav__icon-container">
+					<input type="checkbox" id="KKR25" checked="checked" />
+				</div>
+				<span class="nav__label">KKR25</span>
+			</a>
+			
+			<a href="#" class="nav__link"> 
+				<div class="nav__icon-container">
+					<input type="checkbox" id="KKR3" checked="checked" />
+				</div>
+				<span class="nav__label">KKR3</span>
+			</a>
+			
+			<a href="#" class="nav__link"> 
+				<div class="nav__icon-container">
+					<input type="checkbox" id="KKs3" checked="checked" />
+				</div>
+				<span class="nav__label">KKs3</span>
+			</a>
+			
+			<a href="#" class="nav__link"> 
+				<div class="nav__icon-container">
+					<input type="checkbox" id="Leo1" checked="checked" />
+				</div>
+				<span class="nav__label">Leo 1</span>
+			</a>
+			
+			<a href="#" class="nav__link"> 
+				<div class="nav__icon-container">
+					<input type="checkbox" id="Leo2" checked="checked" />
+				</div>
+				<span class="nav__label">Leo 2</span>
+			</a>
+			
+			<a href="#" class="nav__link"> 
+				<div class="nav__icon-container">
+					<input type="checkbox" id="Leo4" checked="checked" />
+				</div>
+				<span class="nav__label">Leo 4</span>
+			</a>
+			
+			<a href="#" class="nav__link"> 
+				<div class="nav__icon-container">
+					<input type="checkbox" id="Leo5" checked="checked" />
+				</div>
+				<span class="nav__label">Leo 5</span>
+			</a>
+			
+			<a href="#" class="nav__link"> 
+				<div class="nav__icon-container">
+					<input type="checkbox" id="LeoA" checked="checked" />
+				</div>
+				<span class="nav__label">Leo A</span>
+			</a>
+			
+			<a href="#" class="nav__link"> 
+				<div class="nav__icon-container">
+					<input type="checkbox" id="LeoP" checked="checked" />
+				</div>
+				<span class="nav__label">Leo P</span>
+			</a>
+			
+			<a href="#" class="nav__link"> 
+				<div class="nav__icon-container">
+					<input type="checkbox" id="LeoT" checked="checked" />
+				</div>
+				<span class="nav__label">Leo T</span>
+			</a>
+			
+			<a href="#" class="nav__link"> 
+				<div class="nav__icon-container">
+					<input type="checkbox" id="LGS3" checked="checked" />
+				</div>
+				<span class="nav__label">LGS3</span>
+			</a>
+			
+			<a href="#" class="nav__link"> 
+				<div class="nav__icon-container">
+					<input type="checkbox" id="LMC" checked="checked" />
+				</div>
+				<span class="nav__label">LMC</span>
+			</a>
+			
+			<a href="#" class="nav__link"> 
+				<div class="nav__icon-container">
+					<input type="checkbox" id="M32" checked="checked" />
+				</div>
+				<span class="nav__label">M32</span>
+			</a>
+			
+			<a href="#" class="nav__link"> 
+				<div class="nav__icon-container">
+					<input type="checkbox" id="NGC147" checked="checked" />
+				</div>
+				<span class="nav__label">NGC147</span>
+			</a>
+			
+			<a href="#" class="nav__link"> 
+				<div class="nav__icon-container">
+					<input type="checkbox" id="NGC185" checked="checked" />
+				</div>
+				<span class="nav__label">NGC185</span>
+			</a>
+			
+			<a href="#" class="nav__link"> 
+				<div class="nav__icon-container">
+					<input type="checkbox" id="NGC205" checked="checked" />
+				</div>
+				<span class="nav__label">NGC205</span>
+			</a>
+			
+			<a href="#" class="nav__link"> 
+				<div class="nav__icon-container">
+					<input type="checkbox" id="NGC300" checked="checked" />
+				</div>
+				<span class="nav__label">NGC300</span>
+			</a>
+			
+			<a href="#" class="nav__link"> 
+				<div class="nav__icon-container">
+					<input type="checkbox" id="NGC3109" checked="checked" />
+				</div>
+				<span class="nav__label">NGC3109</span>
+			</a>
+			
+			<a href="#" class="nav__link"> 
+				<div class="nav__icon-container">
+					<input type="checkbox" id="NGC4163" checked="checked" />
+				</div>
+				<span class="nav__label">NGC4163</span>
+			</a>
+			
+			<a href="#" class="nav__link"> 
+				<div class="nav__icon-container">
+					<input type="checkbox" id="NGC55" checked="checked" />
+				</div>
+				<span class="nav__label">NGC55</span>
+			</a>
+			
+			<a href="#" class="nav__link"> 
+				<div class="nav__icon-container">
+					<input type="checkbox" id="NGC6822" checked="checked" />
+				</div>
+				<span class="nav__label">NGC6822</span>
+			</a>
+			
+			<a href="#" class="nav__link"> 
+				<div class="nav__icon-container">
+					<input type="checkbox" id="Pegasus3" checked="checked" />
+				</div>
+				<span class="nav__label">Pegasus 3</span>
+			</a>
+			
+			<a href="#" class="nav__link"> 
+				<div class="nav__icon-container">
+					<input type="checkbox" id="PegasusdIrr" checked="checked" />
+				</div>
+				<span class="nav__label">Pegasus dIrr</span>
+			</a>
+			
+			<a href="#" class="nav__link"> 
+				<div class="nav__icon-container">
+					<input type="checkbox" id="Phoenix" checked="checked" />
+				</div>
+				<span class="nav__label">Phoenix</span>
+			</a>
+			
+			<a href="#" class="nav__link"> 
+				<div class="nav__icon-container">
+					<input type="checkbox" id="Phoenix2" checked="checked" />
+				</div>
+				<span class="nav__label">Phoenix 2</span>
+			</a>
+			
+			<a href="#" class="nav__link"> 
+				<div class="nav__icon-container">
+					<input type="checkbox" id="Pictor1" checked="checked" />
+				</div>
+				<span class="nav__label">Pictor 1</span>
+			</a>
+			
+			<a href="#" class="nav__link"> 
+				<div class="nav__icon-container">
+					<input type="checkbox" id="Pictor2" checked="checked" />
+				</div>
+				<span class="nav__label">Pictor 2</span>
+			</a>
+			
+			<a href="#" class="nav__link"> 
+				<div class="nav__icon-container">
+					<input type="checkbox" id="Pisces2" checked="checked" />
+				</div>
+				<span class="nav__label">Pisces 2</span>
+			</a>
+			
+			<a href="#" class="nav__link"> 
+				<div class="nav__icon-container">
+					<input type="checkbox" id="Reticulum2" checked="checked" />
+				</div>
+				<span class="nav__label">Reticulum 2</span>
+			</a>
+			
+			<a href="#" class="nav__link"> 
+				<div class="nav__icon-container">
+					<input type="checkbox" id="Reticulum3" checked="checked" />
+				</div>
+				<span class="nav__label">Reticulum 3</span>
+			</a>
+			
+			<a href="#" class="nav__link"> 
+				<div class="nav__icon-container">
+					<input type="checkbox" id="Sagittarius2" checked="checked" />
+				</div>
+				<span class="nav__label">Sagittarius 2</span>
+			</a>
+			
+			<a href="#" class="nav__link"> 
+				<div class="nav__icon-container">
+					<input type="checkbox" id="SagittariusdIrr" checked="checked" />
+				</div>
+				<span class="nav__label">Sagittarius dIrr</span>
+			</a>
+			
+			<a href="#" class="nav__link"> 
+				<div class="nav__icon-container">
+					<input type="checkbox" id="SagittariusdSph" checked="checked" />
+				</div>
+				<span class="nav__label">Sagittarius dSph</span>
+			</a>
+			
+			<a href="#" class="nav__link"> 
+				<div class="nav__icon-container">
+					<input type="checkbox" id="Sculptor" checked="checked" />
+				</div>
+				<span class="nav__label">Sculptor</span>
+			</a>
+			
+			<a href="#" class="nav__link"> 
+				<div class="nav__icon-container">
+					<input type="checkbox" id="Segue(1)" checked="checked" />
+				</div>
+				<span class="nav__label">Segue (1)</span>
+			</a>
+			
+			<a href="#" class="nav__link"> 
+				<div class="nav__icon-container">
+					<input type="checkbox" id="Segue2" checked="checked" />
+				</div>
+				<span class="nav__label">Segue 2</span>
+			</a>
+			
+			<a href="#" class="nav__link"> 
+				<div class="nav__icon-container">
+					<input type="checkbox" id="Sextans(1)" checked="checked" />
+				</div>
+				<span class="nav__label">Sextans (1)</span>
+			</a>
+			
+			<a href="#" class="nav__link"> 
+				<div class="nav__icon-container">
+					<input type="checkbox" id="SextansA" checked="checked" />
+				</div>
+				<span class="nav__label">Sextans A</span>
+			</a>
+			
+			<a href="#" class="nav__link"> 
+				<div class="nav__icon-container">
+					<input type="checkbox" id="SextansB" checked="checked" />
+				</div>
+				<span class="nav__label">SextansB</span>
+			</a>
+			
+			<a href="#" class="nav__link"> 
+				<div class="nav__icon-container">
+					<input type="checkbox" id="SMC" checked="checked" />
+				</div>
+				<span class="nav__label">SMC</span>
+			</a>
+			
+			<a href="#" class="nav__link"> 
+				<div class="nav__icon-container">
+					<input type="checkbox" id="Triangulum2" checked="checked" />
+				</div>
+				<span class="nav__label">Triangulum 2</span>
+			</a>
+			
+			<a href="#" class="nav__link"> 
+				<div class="nav__icon-container">
+					<input type="checkbox" id="Tucana" checked="checked" />
+				</div>
+				<span class="nav__label">Tucana</span>
+			</a>
+			
+			<a href="#" class="nav__link"> 
+				<div class="nav__icon-container">
+					<input type="checkbox" id="Tucana2" checked="checked" />
+				</div>
+				<span class="nav__label">Tucana 2</span>
+			</a>
+			
+			<a href="#" class="nav__link"> 
+				<div class="nav__icon-container">
+					<input type="checkbox" id="Tucana3" checked="checked" />
+				</div>
+				<span class="nav__label">Tucana 3</span>
+			</a>
+			
+			<a href="#" class="nav__link"> 
+				<div class="nav__icon-container">
+					<input type="checkbox" id="Tucana4" checked="checked" />
+				</div>
+				<span class="nav__label">Tucana 4</span>
+			</a>
+			
+			<a href="#" class="nav__link"> 
+				<div class="nav__icon-container">
+					<input type="checkbox" id="Tucana5" checked="checked" />
+				</div>
+				<span class="nav__label">Tucana 5</span>
+			</a>
+			
+			<a href="#" class="nav__link"> 
+				<div class="nav__icon-container">
+					<input type="checkbox" id="UGC4879" checked="checked" />
+				</div>
+				<span class="nav__label">UGC4879</span>
+			</a>
+			
+			<a href="#" class="nav__link"> 
+				<div class="nav__icon-container">
+					<input type="checkbox" id="UGC8508" checked="checked" />
+				</div>
+				<span class="nav__label">UGC8508</span>
+			</a>
+			
+			<a href="#" class="nav__link"> 
+				<div class="nav__icon-container">
+					<input type="checkbox" id="UGC9128" checked="checked" />
+				</div>
+				<span class="nav__label">UGC9128</span>
+			</a>
+			
+			<a href="#" class="nav__link"> 
+				<div class="nav__icon-container">
+					<input type="checkbox" id="UGCA86" checked="checked" />
+				</div>
+				<span class="nav__label">UGCA86</span>
+			</a>
+			
+			<a href="#" class="nav__link"> 
+				<div class="nav__icon-container">
+					<input type="checkbox" id="UKS2323-326" checked="checked" />
+				</div>
+				<span class="nav__label">UKS2323-326</span>
+			</a>
+			
+			<a href="#" class="nav__link"> 
+				<div class="nav__icon-container">
+					<input type="checkbox" id="UrsaMajor(1)" checked="checked" />
+				</div>
+				<span class="nav__label">Ursa Major (1)</span>
+			</a>
+			
+			<a href="#" class="nav__link"> 
+				<div class="nav__icon-container">
+					<input type="checkbox" id="UrsaMajor2" checked="checked" />
+				</div>
+				<span class="nav__label">Ursa Major 2</span>
+			</a>
+			
+			<a href="#" class="nav__link"> 
+				<div class="nav__icon-container">
+					<input type="checkbox" id="UrsaMinor" checked="checked" />
+				</div>
+				<span class="nav__label">Ursa Minor</span>
+			</a>
+			
+			<a href="#" class="nav__link"> 
+				<div class="nav__icon-container">
+					<input type="checkbox" id="Virgo1" checked="checked" />
+				</div>
+				<span class="nav__label">Virgo 1</span>
+			</a>
+			
+			<a href="#" class="nav__link"> 
+				<div class="nav__icon-container">
+					<input type="checkbox" id="Willman1" checked="checked" />
+				</div>
+				<span class="nav__label">Willman 1</span>
+			</a>
+			
+			<a href="#" class="nav__link"> 
+				<div class="nav__icon-container">
+					<input type="checkbox" id="WLM" checked="checked" />
+				</div>
+				<span class="nav__label">WLM</span>
+			</a>
+			</nav>
+			<main class="main">
+				<div id="main-viewport" class="viewport" style="position: absolute; overflow: hidden; width: 100%; height: 100%;">	 <!-- Division to display the scene -->
+				</div>
+			</main>
+	</div>
+				
+	<!-- Load latest Threejs library modules from the web. No need to download them by hand (code is based on march 23' version) -->
+	<script async src="https://unpkg.com/es-module-shims@1.3.6/dist/es-module-shims.js"></script>
+	<script type="importmap">
+	{
+		"imports": {
+			"three": "https://unpkg.com/three@0.149.0/build/three.module.js",
+			"three/addons/": "https://unpkg.com/three@0.149.0/examples/jsm/"
+		}
+	}
+	</script>
+
+	<!-- Load library to generate screen captures to make videos (not needed for animation) and more -->
+	<script src="threejs/CCapture.all.min.js"></script>
+	<script src="https://cdn.rawgit.com/mrdoob/three.js/r129/build/three.min.js"></script>
+	<script src="https://cdn.rawgit.com/mrdoob/three.js/r129/examples/js/controls/OrbitControls.js"></script>
+	<script src="https://cdn.rawgit.com/mrdoob/three.js/r129/examples/js/controls/FlyControls.js"></script>
+
+    <!-- Main script containing the animation -->	
+	<script type="module">
+		// Style button
+		var milkyway = document.getElementById("milkyway");
+		milkyway.style.backgroundColor = "darkgrey";
+		
+		// Import functions from Threejs modules
+		import * as THREE from 'three';
+		import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+		import { FlyControls } from "../modules/FlyControls.js";
+		
+		// Declare some variables 
+		var camera, renderer, controls;
+		var plane1;
+		var galaxies = [];
+		var solarsys = [];
+		var scaleVector = new THREE.Vector3();
+		var info_coord;
+		
+		const dSphs = ["AndI","AndII","AndIII","AndIX","AndV","AndVI","AndVII","AndXIV","AndXIX","AndXV","AndXVI","AndXVII","AndXVIII","AndXXI","AndXXIII",
+			"AndXXIX","AndXXV","AndXXVII","AndXXVIII","AndXXX","AndXXXI","AndXXXII","AndXXXIII","Antlia","Antlia2","AntliaB","Aquarius","CanesVenatici(1)","CanisMajor","Carina","Cetus","SMC_no",
+			"Crater2","DDO113","DDO125","DDO190","DDO99","Draco","ESO294-G010","ESO410-G005","Fornax","GR8","IC10","IC1613","IC3104","IC4662","IC5152","KK258","KKH86","KKH98","KKR25","KKR3","KKs3","Leo1","Leo2","LeoA","LeoP","LGS3","LMC_no","M31_no",
+			"M32","NGC147","NGC185","NGC205","NGC300","NGC3109","NGC4163","NGC55","NGC6822","PegasusdIrr","Phoenix","SagittariusdIrr","SagittariusdSph","Sculptor","Sextans(1)","SextansA","SextansB","Tucana","Triangulum_no","UGC4879","UGC8508","UGC9128","UGCA86","UKS2323-326","UrsaMinor","WLM"];
+		const UFDs = ["AndX","AndXI","AndXII","AndXIII","AndXX","AndXXII","AndXXIV","AndXXVI","Aquarius2","Bootes(1)","Bootes2","Bootes3","Bootes4","CanesVenatici2","Carina2","Carina3","Centaurus1",
+			"Cetus2","Cetus3","Columba1","ComaBerenices","DESJ0225+0304","Draco2","Eridanus2","Eridanus3","Grus1","Grus2","Hercules","HIZSS3(A)","HIZSS3B","Horologium1","Horologium2","Hydra1","Hydra2","Hydrus1","Indus1","Indus2","Leo4","Leo5",
+			"LeoT","Pegasus3","Phoenix2","Pictor1","Pictor2","Pisces2","Reticulum2","Reticulum3","Sagittarius2","Segue(1)","Segue2","Triangulum2","Tucana2","Tucana3","Tucana4","Tucana5","UrsaMajor(1)","UrsaMajor2","Virgo1","Willman1"];
+				
+		// Format the html element showing the 'time' text 
+		var timeText = document.createElement('div');
+		timeText.style.position = 'absolute';
+		timeText.style.fontFamily = "Arial, Helvetica, sans-serif";
+		timeText.style.fontSize = 30 + 'px';
+		timeText.style.width = 100;
+		timeText.style.height = 100;
+		timeText.style.color = "white";
+		timeText.style.top  = 17 + '%'; 
+		timeText.style.left = 2 + '%'; 
+		document.getElementById("main-viewport").appendChild(timeText);
+		
+		// Format the html element showing the 'loading' text
+		var loadingText = document.createElement('div');
+		loadingText.style.position = 'absolute';
+		loadingText.style.fontFamily = "Arial, Helvetica, sans-serif";
+		loadingText.style.fontSize = 30 + 'px';
+		loadingText.style.width = 100;
+		loadingText.style.height = 100;
+		loadingText.style.color = "white";
+		loadingText.style.top  = 17 + '%'; //'px'
+		loadingText.style.left = 2 + '%'; //'px'
+		loadingText.innerHTML = "Loading...";
+		document.getElementById("main-viewport").appendChild(loadingText);
+		
+		// Format the html element showing the 'credit' text
+		var instructionsText = document.createElement('div');
+		instructionsText.style.position = 'absolute';
+		instructionsText.style.fontFamily = "Courier, Arial, Helvetica, sans-serif";
+		instructionsText.style.fontSize = 15 + 'px';
+		instructionsText.style.width = 100;
+		instructionsText.style.height = 100;
+		instructionsText.style.color = "white";
+		instructionsText.style.top  = 7.5 + '%'; //'px'
+		instructionsText.style.left = 2 + '%'; //'px'
+		instructionsText.innerHTML = "Instructions: drag, scroll, pinch to change view, press 'WASD' to move camera";
+		document.getElementById("main-viewport").appendChild(instructionsText);
+		
+		var instructions2Text = document.createElement('div');
+		instructions2Text.style.position = 'absolute';
+		instructions2Text.style.fontFamily = "Courier, Arial, Helvetica, sans-serif";
+		instructions2Text.style.fontSize = 15 + 'px';
+		instructions2Text.style.width = 100;
+		instructions2Text.style.height = 100;
+		instructions2Text.style.color = "white";
+		instructions2Text.style.top  = 12.5 + '%'; //'px'
+		instructions2Text.style.left = 2 + '%'; //'px'
+		instructions2Text.innerHTML = "Note: The viewing center can only be changed in Orbit Mode";
+		document.getElementById("main-viewport").appendChild(instructions2Text);
+		
+		var creditText = document.createElement('div');
+		creditText.style.position = 'absolute';
+		creditText.style.fontFamily = "Courier, Arial, Helvetica, sans-serif";
+		creditText.style.fontSize = 13 + 'px';
+		creditText.style.width = 100;
+		creditText.style.height = 100;
+		creditText.style.color = "white";
+		creditText.style.top  = 95 + '%'; //'px'
+		creditText.style.left = 2 + '%'; //'px'
+		creditText.innerHTML = "Animation: A. Alvarez, A. Villalobos, G. Battaglia, G. Thomas; Milky Way rendition: NASA";
+		document.getElementById("main-viewport").appendChild(creditText);
+		
+		// Format the html element showing the 'title1' text
+		var title1Text = document.createElement('div');
+		title1Text.style.position = 'absolute';
+		title1Text.style.fontFamily = "Courier, Arial, Helvetica, sans-serif";
+		title1Text.style.fontSize = 17 + 'px';
+		title1Text.style.width = 100;
+		title1Text.style.height = 100;
+		title1Text.style.color = "white";
+		title1Text.style.top  = 2.5 + '%'; //'px'
+		title1Text.style.left = 2 + '%'; //'px'
+		title1Text.innerHTML = "Interactive representation of the Local Group of galaxies";
+		document.getElementById("main-viewport").appendChild(title1Text);
+		
+		// Format the html element showing the 'title2' text
+		var title2Text = document.createElement('div');
+		title2Text.style.position = 'absolute';
+		title2Text.style.fontFamily = "Courier, Arial, Helvetica, sans-serif";
+		title2Text.style.fontSize = 14 + 'px';
+		title2Text.style.width = 100;
+		title2Text.style.height = 100;
+		title2Text.style.color = "white";
+		title2Text.style.top  = 90.5 + '%'; //'px'
+		title2Text.style.left = 2 + '%'; //'px'
+		title2Text.innerHTML = "Data from the updated online data based by McConnachie (McConnachie 2012)";
+		document.getElementById("main-viewport").appendChild(title2Text);
+	
+		// Usual Threejs basic structure
+		init();
+		animate();
+	
+		function init() {
+			// Create the scene, camera, renderer and controls for the animation
+			scene = new THREE.Scene();
+			camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 10000);
+			var originalCameraPosition = new THREE.Vector3(0, 180, 10);
+			camera.position.set(0, 180, 10);
+			camera.up.set(0,0,1);
+			// Camera looks at the center of the Milky Way (general scene) when you start the animation.
+			//camera.lookAt(scene.position);
+			
+			renderer = new THREE.WebGLRenderer({ antialias: true });
+			renderer.setPixelRatio( window.devicePixelRatio );
+			renderer.setSize(window.innerWidth, window.innerHeight);
+			document.getElementById("main-viewport").appendChild(renderer.domElement);
+			
+			isOrbit = true;
+			isFly = false;
+			var isM31 = false;
+			var isMW = true;
+			var ismp = false;
+			
+			controls = new OrbitControls(camera, document.getElementById("main-viewport"));
+			controls.enablePan = false;
+			controls.enableDamping = true;
+			controls.dampingFactor = 0.05;
+			controls.update();
+			
+			var milkyway_container = document.getElementById("milkyway");
+			var m31_container = document.getElementById("m31_galaxy");
+			var free_container = document.getElementById("free_movement");
+			var mid_point_container = document.getElementById("mid_point");
+			var freeButton = document.getElementById("freeButton");
+			
+			milkyway_container.addEventListener('click', function(event) {
+				isM31 = false;
+				isMW = true;
+				ismp = false;
+				if (isOrbit) {
+					camera.position.copy(originalCameraPosition);
+					controls.target.set(0,0,0);
+					controls.update();
+					// Style button
+					milkyway_container.style.backgroundColor = "darkgrey";
+					m31_container.style.backgroundColor = "";
+					mid_point_container.style.backgroundColor = "";
+				} else {
+					// Print information to the web browser
+					alert('You can only chage the view in Orbit Mode');
+				}	
+			});
+			
+			m31_container.addEventListener('click', function(event) {
+				isM31 = true;
+				isMW = false;
+				ismp = false;
+				if (isOrbit) {
+					// Establece la posición y la altura de la cámara
+					camera.position.set(374.3, 805.5, -269.8);
+					// Mira hacia la posición específica
+					controls.target.set(374.3, 605.5, -279.8);
+					// Actualiza los controles OrbitControls
+					controls.update();
+					// Style button
+					milkyway_container.style.backgroundColor = "";
+					m31_container.style.backgroundColor = "darkgrey";
+					mid_point_container.style.backgroundColor = "";
+				} else {
+					// Print information to the web browser
+					alert('You can only chage the view in Orbit Mode');
+				}	
+			});
+
+			mid_point_container.addEventListener('click', function(event) {
+				isM31 = false;
+				isMW = false;
+				ismp = true;
+				if (isOrbit) {
+					// Establece la posición y la altura de la cámara
+					camera.position.set(374.3/2, 605.5/2, -279.8/2+2000);
+					// Mira hacia la posición específica
+					controls.target.set(374.3/2, 605.5/2, -279.8/2);
+					// Actualiza los controles OrbitControls
+					controls.update();
+					// Style button
+					milkyway_container.style.backgroundColor = "";
+					m31_container.style.backgroundColor = "";
+					mid_point_container.style.backgroundColor = "darkgrey";
+				} else {
+					// Print information to the web browser
+					alert('You can only chage the view in Orbit Mode');
+				}	
+			});
+			
+			free_container.addEventListener('click', function(event) {
+				if (isOrbit) {
+                    isOrbit = false;
+                    isFly = true;
+                    controls.dispose();
+                    controls = new FlyControls(camera, renderer.domElement);
+                    controls.movementSpeed = 10;
+                    controls.rollSpeed = Math.PI / 180;
+                    controls.autoForward = false;
+                    controls.dragToLook = true;
+					if (isM31) {
+						controls.object.lookAt(374.3, 605.5, -279.8);
+					} else if (isMW) {
+						controls.object.lookAt(0, 0, 0);
+					} else if (ismp) {
+						controls.object.lookAt(374.3/2, 605.5/2, -279.8/2);
+					}
+					freeButton.innerHTML = "Fly Mode";
+					document.getElementById("freeIconContainer").innerHTML = '<i class="material-icons">flight</i>';
+				} else if (isFly) {
+                    isOrbit = true;
+                    isFly = false;
+                    controls.dispose();
+                    controls = new OrbitControls(camera, document.getElementById("main-viewport"));
+                    controls.enablePan = false;
+                    controls.enableDamping = true;
+                    controls.dampingFactor = 0.05;
+					if (isM31) {
+						controls.target.set(374.3, 605.5, -279.8);
+					} else if (isMW) {
+						controls.target.set(0, 0, 0);
+					} else if (ismp) {
+						controls.target.set(374.3/2, 605.5/2, -279.8/2);
+					}
+                    controls.update();
+					freeButton.innerHTML = "Orbit Mode";
+					document.getElementById("freeIconContainer").innerHTML = '<i class="material-icons">language</i>';
+				} else {
+					console.error( 'An error may have happened' );
+				} 	
+			});
+			
+			// Function to create a single satellite galaxy for scene.
+			// The satellite galaxy has:
+			// - a position
+			// - a text with its respective name.
+			//		Note that the text is constructed as a sprite, meaning that
+			//		always faces to camera, no matter the camera position
+			// - a texture (for simplicity the same for all galaxies)
+			var createGalaxy = function(name) {
+				// Create the texture from an image file, using several settings
+				// to make them semi-transparent, pass behind the Milky Way when orbiting, etc 
+				if (dSphs.includes(name)) {
+					// Create the geometry
+					var geom = new THREE.BufferGeometry();
+					var points = [];
+					points.push( new THREE.Vector3(0,0,0) );
+					geom.setFromPoints(points);
+					geom.computeVertexNormals();
+					var texture = new THREE.TextureLoader().load('images/dSphs.png');
+					var mat = new THREE.PointsMaterial( {
+						color: 0xFFFFFF,
+						size: 20,
+						map: texture,
+						blending: THREE.AdditiveBlending,
+						depthTest: false,
+						transparent: true 
+					} );
+					// Create a basic galaxy (visible for now)
+					var galaxy = new THREE.Points( geom, mat );
+					galaxy.visible = true;    
+					// Create the name of the galaxy as a sprite
+					var canvas = document.createElement('canvas');
+					canvas.width = 512*2;
+					canvas.height = 512*2;
+					var ctx = canvas.getContext("2d");
+					ctx.font = "110pt Arial";
+					ctx.fillStyle = "white";
+					ctx.textAlign = "center";
+					ctx.fillText(name, 512, 256);
+					var tex = new THREE.Texture(canvas);
+					tex.needsUpdate = true;
+					var spriteMat = new THREE.SpriteMaterial({
+						map: tex
+					});
+					var sprite = new THREE.Sprite(spriteMat);
+					
+					// Finally attach the name to the galaxy, add the galaxy to the 'galaxies' array
+					// and add the galaxy to the scene
+					galaxy.add(sprite);
+					galaxies.push(galaxy);
+					scene.add(galaxy);
+					galaxy.name = name;
+				} else if (UFDs.includes(name)) {
+					// Create the geometry
+					var geom = new THREE.BufferGeometry();
+					var points = [];
+					points.push( new THREE.Vector3(0,0,0) );
+					geom.setFromPoints(points);
+					geom.computeVertexNormals();
+					var texture = new THREE.TextureLoader().load('images/UFDs.png');
+					var mat = new THREE.PointsMaterial( {
+						color: 0xFFFFFF,
+						size: 20,
+						map: texture,
+						blending: THREE.AdditiveBlending,
+						depthTest: false,
+						transparent: true 
+					} );
+					// Create a basic galaxy (visible for now)
+					var galaxy = new THREE.Points( geom, mat );
+					galaxy.visible = true;    
+					// Create the name of the galaxy as a sprite
+					var canvas = document.createElement('canvas');
+					canvas.width = 512*2;
+					canvas.height = 512*2;
+					var ctx = canvas.getContext("2d");
+					ctx.font = "110pt Arial";
+					ctx.fillStyle = "white";
+					ctx.textAlign = "center";
+					ctx.fillText(name, 512, 256);
+					var tex = new THREE.Texture(canvas);
+					tex.needsUpdate = true;
+					var spriteMat = new THREE.SpriteMaterial({
+						map: tex
+					});
+					var sprite = new THREE.Sprite(spriteMat);
+					
+					// Finally attach the name to the galaxy, add the galaxy to the 'galaxies' array
+					// and add the galaxy to the scene
+					galaxy.add(sprite);
+					galaxies.push(galaxy);
+					scene.add(galaxy);
+					galaxy.name = name;
+				} else if (name==="LMC"){
+					// Create the geometry
+					var geom = new THREE.BufferGeometry();
+					var points = [];
+					points.push( new THREE.Vector3(0,0,0) );
+					geom.setFromPoints(points);
+					geom.computeVertexNormals();
+					var texture = new THREE.TextureLoader().load('images/LMC.png');
+					var mat = new THREE.PointsMaterial( {
+						color: 0xFFFFFF,
+						size: 100,
+						map: texture,
+						blending: THREE.AdditiveBlending,
+						depthTest: false,
+						transparent: true 
+					} );
+					// Create a basic galaxy (visible for now)
+					var galaxy = new THREE.Points( geom, mat );
+					galaxy.visible = true;    
+					// Create the name of the galaxy as a sprite
+					var canvas = document.createElement('canvas');
+					canvas.width = 512*2;
+					canvas.height = 512*2;
+					var ctx = canvas.getContext("2d");
+					ctx.font = "110pt Arial";
+					ctx.fillStyle = "white";
+					ctx.textAlign = "center";
+					ctx.fillText(name, 512, 256);
+					var tex = new THREE.Texture(canvas);
+					tex.needsUpdate = true;
+					var spriteMat = new THREE.SpriteMaterial({
+						map: tex
+					});
+					var sprite = new THREE.Sprite(spriteMat);
+					
+					// Finally attach the name to the galaxy, add the galaxy to the 'galaxies' array
+					// and add the galaxy to the scene
+					galaxy.add(sprite);
+					galaxies.push(galaxy);
+					scene.add(galaxy);
+					galaxy.name = name;
+				} else if (name==="SMC"){
+					// Create the geometry
+					var geom = new THREE.BufferGeometry();
+					var points = [];
+					points.push( new THREE.Vector3(0,0,0) );
+					geom.setFromPoints(points);
+					geom.computeVertexNormals();
+					var texture = new THREE.TextureLoader().load('images/LMC.png');
+					var mat = new THREE.PointsMaterial( {
+						color: 0xFFFFFF,
+						size: 50,
+						map: texture,
+						blending: THREE.AdditiveBlending,
+						depthTest: false,
+						transparent: true
+					} );
+					// Create a basic galaxy (visible for now)
+					var galaxy = new THREE.Points( geom, mat );
+					galaxy.visible = true;    
+					// Create the name of the galaxy as a sprite
+					var canvas = document.createElement('canvas');
+					canvas.width = 512*2;
+					canvas.height = 512*2;
+					var ctx = canvas.getContext("2d");
+					ctx.font = "110pt Arial";
+					ctx.fillStyle = "white";
+					ctx.textAlign = "center";
+					ctx.fillText(name, 512, 256);
+					var tex = new THREE.Texture(canvas);
+					tex.needsUpdate = true;
+					var spriteMat = new THREE.SpriteMaterial({
+						map: tex
+					});
+					var sprite = new THREE.Sprite(spriteMat);
+					
+					// Finally attach the name to the galaxy, add the galaxy to the 'galaxies' array
+					// and add the galaxy to the scene
+					galaxy.add(sprite);
+					galaxies.push(galaxy);
+					scene.add(galaxy);
+					galaxy.name = name;
+				} else if (name==="M31"){
+					// Create the geometry
+					var geom = new THREE.BufferGeometry();
+					var points = [];
+					points.push( new THREE.Vector3(0,0,0) );
+					geom.setFromPoints(points);
+					geom.computeVertexNormals();
+					var texture = new THREE.TextureLoader().load('images/dSphs.png');
+					var mat = new THREE.PointsMaterial( {
+						color: 0xFFFFFF,
+						size: 0.01,
+						map: texture,
+						blending: THREE.AdditiveBlending,
+						depthTest: false,
+						transparent: true 
+					} );
+					// Create a basic galaxy (visible for now)
+					var galaxy = new THREE.Points( geom, mat );
+					galaxy.visible = true;    
+					// Create the name of the galaxy as a sprite
+					var canvas = document.createElement('canvas');
+					canvas.width = 512*2;
+					canvas.height = 512*2;
+					var ctx = canvas.getContext("2d");
+					ctx.font = "110pt Arial";
+					ctx.fillStyle = "white";
+					ctx.textAlign = "center";
+					ctx.fillText(name, 512, 256);
+					var tex = new THREE.Texture(canvas);
+					tex.needsUpdate = true;
+					var spriteMat = new THREE.SpriteMaterial({
+						map: tex
+					});
+					var sprite = new THREE.Sprite(spriteMat);
+					
+					// Finally attach the name to the galaxy and add the galaxy to the scene
+					galaxy.add(sprite);
+					galaxies.push(galaxy);
+					scene.add(galaxy);
+					galaxy.name = name;
+					
+					// Create the M31 (geometry, position, texture, etc) and add it to the scene
+						var cylinderGeometry = new THREE.CylinderGeometry(15,15,0.8,32,32);
+						cylinderGeometry.rotateX(-Math.PI * 0.5);
+						var texture = new THREE.TextureLoader().load( 'images/m31.jpg' ); // TextureLoader may have problems in IPhone/Chrome
+						var planeMaterial = new THREE.MeshLambertMaterial( { map: texture, side: THREE.DoubleSide} );
+			
+						var plane2 = new THREE.Mesh(cylinderGeometry, planeMaterial);
+						plane2.receiveShadow = true;
+						plane2.position.set(374.3, 605.5, -279.8);
+						plane2.visible = true;
+						scene.add(plane2);
+				} else if (name==="Triangulum"){
+					// Create the geometry
+					var geom = new THREE.BufferGeometry();
+					var points = [];
+					points.push( new THREE.Vector3(0,0,0) );
+					geom.setFromPoints(points);
+					geom.computeVertexNormals();
+					var texture = new THREE.TextureLoader().load('images/dSphs.png');
+					var mat = new THREE.PointsMaterial( {
+						color: 0xFFFFFF,
+						size: 0.01,
+						map: texture,
+						blending: THREE.AdditiveBlending,
+						depthTest: false,
+						transparent: true 
+					} );
+					// Create a basic galaxy (visible for now)
+					var galaxy = new THREE.Points( geom, mat );
+					galaxy.visible = true;    
+					// Create the name of the galaxy as a sprite
+					var canvas = document.createElement('canvas');
+					canvas.width = 512*2;
+					canvas.height = 512*2;
+					var ctx = canvas.getContext("2d");
+					ctx.font = "110pt Arial";
+					ctx.fillStyle = "white";
+					ctx.textAlign = "center";
+					ctx.fillText(name, 512, 256);
+					var tex = new THREE.Texture(canvas);
+					tex.needsUpdate = true;
+					var spriteMat = new THREE.SpriteMaterial({
+						map: tex
+					});
+					var sprite = new THREE.Sprite(spriteMat);
+					
+					// Finally attach the name to the galaxy and add the galaxy to the scene
+					galaxy.add(sprite);
+					galaxies.push(galaxy);
+					scene.add(galaxy);
+					galaxy.name = name;
+					
+					// Create the Triangulum (geometry, position, texture, etc) and add it to the scene
+						var cylinderGeometry = new THREE.CylinderGeometry(15,15,0.8,32,32);
+						cylinderGeometry.rotateX(-Math.PI * 0.5);
+						var texture = new THREE.TextureLoader().load( 'images/tri.jpg' ); // TextureLoader may have problems in IPhone/Chrome
+						var planeMaterial = new THREE.MeshLambertMaterial( { map: texture, side: THREE.DoubleSide} );
+			
+						var plane3 = new THREE.Mesh(cylinderGeometry, planeMaterial);
+						plane3.receiveShadow = true;
+						plane3.position.set(484.7, 500.4, -420.7);
+						plane3.visible = true;
+						scene.add(plane3);
+				}
+
+			};
+	
+			// Function to create the Sun. Similar steps as before
+			var createSun = function(name, radius) {
+				var geom = new THREE.SphereGeometry(radius, 32, 16);
+				var texture = new THREE.TextureLoader().load('images/sunsurface.jpg');
+				var mat = new THREE.MeshBasicMaterial({
+					color: "gold",
+					map: texture
+				});
+				var sun = new THREE.Mesh(geom, mat);
+				sun.visible = true;
+				sun.position.set(8,0,0);
+				
+				var canvas = document.createElement('canvas');
+				canvas.width = 256;
+				canvas.height = 256;
+				var ctx = canvas.getContext("2d");
+				ctx.font = "44pt Arial";
+				ctx.fillStyle = "white";
+				ctx.textAlign = "center";
+				ctx.fillText(name, 128, 44);
+				var tex = new THREE.Texture(canvas);
+				tex.needsUpdate = true;
+				var spriteMat = new THREE.SpriteMaterial({
+					map: tex
+				});
+				var sprite = new THREE.Sprite(spriteMat);
+				
+				sun.add(sprite);
+				solarsys.push(sun);
+				scene.add(sun);
+				
+				// Scale the name of the Sun according to camera position
+				var scaleFactor = 5;
+				var sprite = sun.children[0];
+				var scale = scaleVector.subVectors(sun.position, camera.position).length() / scaleFactor;
+				sprite.scale.set(scale, scale, 1);
+			};
+	
+			// Create all the satellite galaxies by name, the Sun and LMC for Scene.
+			createGalaxy("AndI");
+			createGalaxy("AndII");
+			createGalaxy("AndIII");
+			createGalaxy("AndIX");
+			createGalaxy("AndV");
+			createGalaxy("AndVI");
+			createGalaxy("AndVII");
+			createGalaxy("AndX");
+			createGalaxy("AndXI");
+			createGalaxy("AndXII");
+			createGalaxy("AndXIII");
+			createGalaxy("AndXIV");
+			createGalaxy("AndXIX");
+			createGalaxy("AndXV");
+			createGalaxy("AndXVI");
+			createGalaxy("AndXVII");
+			createGalaxy("AndXVIII");
+			createGalaxy("AndXX");
+			createGalaxy("AndXXI");
+			createGalaxy("AndXXII");
+			createGalaxy("AndXXIII");
+			createGalaxy("AndXXIV");
+			createGalaxy("AndXXIX");
+			createGalaxy("AndXXV");
+			createGalaxy("AndXXVI");
+			createGalaxy("AndXXVII");
+			createGalaxy("AndXXVIII");
+			createGalaxy("AndXXX");
+			createGalaxy("AndXXXI");
+			createGalaxy("AndXXXII");
+			createGalaxy("AndXXXIII");
+			createGalaxy("Antlia");
+			createGalaxy("Antlia2");
+			createGalaxy("AntliaB");
+			createGalaxy("Aquarius");
+			createGalaxy("Aquarius2");
+			createGalaxy("Bootes(1)");
+			createGalaxy("Bootes2");
+			createGalaxy("Bootes3");
+			createGalaxy("Bootes4");
+			createGalaxy("CanesVenatici(1)");
+			createGalaxy("CanesVenatici2");
+			createGalaxy("CanisMajor");
+			createGalaxy("Carina");
+			createGalaxy("Carina2");
+			createGalaxy("Carina3");
+			createGalaxy("Centaurus1");
+			createGalaxy("Cetus");
+			createGalaxy("Cetus2");
+			createGalaxy("Cetus3");
+			createGalaxy("Columba1");
+			createGalaxy("ComaBerenices");
+			createGalaxy("Crater2");
+			createGalaxy("DDO113");
+			createGalaxy("DDO125");
+			createGalaxy("DDO190");
+			createGalaxy("DDO99");
+			createGalaxy("DESJ0225+0304");
+			createGalaxy("Draco");
+			createGalaxy("Draco2");
+			createGalaxy("Eridanus2");
+			createGalaxy("Eridanus3");
+			createGalaxy("ESO294-G010");
+			createGalaxy("ESO410-G005");
+			createGalaxy("Fornax");
+			createGalaxy("GR8");
+			createGalaxy("Grus1");
+			createGalaxy("Grus2");
+			createGalaxy("Hercules");
+			createGalaxy("HIZSS3(A)");
+			createGalaxy("HIZSS3B");
+			createGalaxy("Horologium1");
+			createGalaxy("Horologium2");
+			createGalaxy("Hydra1");
+			createGalaxy("Hydra2");
+			createGalaxy("Hydrus1");
+			createGalaxy("IC10");
+			createGalaxy("IC1613");
+			createGalaxy("IC3104");
+			createGalaxy("IC4662");
+			createGalaxy("IC5152");
+			createGalaxy("Indus1");
+			createGalaxy("Indus2");
+			createGalaxy("KK258");
+			createGalaxy("KKH86");
+			createGalaxy("KKH98");
+			createGalaxy("KKR25");
+			createGalaxy("KKR3");
+			createGalaxy("KKs3");
+			createGalaxy("Leo1");
+			createGalaxy("Leo2");
+			createGalaxy("Leo4");
+			createGalaxy("Leo5");
+			createGalaxy("LeoA");
+			createGalaxy("LeoP");
+			createGalaxy("LeoT");
+			createGalaxy("LGS3");
+			createGalaxy("LMC");
+			createGalaxy("M31");
+			createGalaxy("M32");
+			createGalaxy("NGC147");
+			createGalaxy("NGC185");
+			createGalaxy("NGC205");
+			createGalaxy("NGC300");
+			createGalaxy("NGC3109");
+			createGalaxy("NGC4163");
+			createGalaxy("NGC55");
+			createGalaxy("NGC6822");
+			createGalaxy("Pegasus3");
+			createGalaxy("PegasusdIrr");
+			createGalaxy("Phoenix");
+			createGalaxy("Phoenix2");
+			createGalaxy("Pictor1");
+			createGalaxy("Pictor2");
+			createGalaxy("Pisces2");
+			createGalaxy("Reticulum2");
+			createGalaxy("Reticulum3");
+			createGalaxy("Sagittarius2");
+			createGalaxy("SagittariusdIrr");
+			createGalaxy("SagittariusdSph");
+			createGalaxy("Sculptor");
+			createGalaxy("Segue(1)");
+			createGalaxy("Segue2");
+			createGalaxy("Sextans(1)");
+			createGalaxy("SextansA");
+			createGalaxy("SextansB");
+			createGalaxy("SMC");
+			createGalaxy("Triangulum");
+			createGalaxy("Triangulum2");
+			createGalaxy("Tucana");
+			createGalaxy("Tucana2");
+			createGalaxy("Tucana3");
+			createGalaxy("Tucana4");
+			createGalaxy("Tucana5");
+			createGalaxy("UGC4879");
+			createGalaxy("UGC8508");
+			createGalaxy("UGC9128");
+			createGalaxy("UGCA86");
+			createGalaxy("UKS2323-326");
+			createGalaxy("UrsaMajor(1)");
+			createGalaxy("UrsaMajor2");
+			createGalaxy("UrsaMinor");
+			createGalaxy("Virgo1");
+			createGalaxy("Willman1");
+			createGalaxy("WLM");
+			createSun("Sun", 1.5);
+			
+			// Add some lights to the scene
+			var light = new THREE.DirectionalLight(0xffffff, 2);
+			light.position.setScalar(10);
+			scene.add(light);
+			
+			var light2 = new THREE.DirectionalLight(0xffffff, 2);
+			light2.position.setScalar(-10);
+			scene.add(light2);
+			
+			// Create the Milky Way (geometry, position, texture, etc) and add it to the scene 1
+			var cylinderGeometry = new THREE.CylinderGeometry(15,15,0.8,32,32);
+			cylinderGeometry.rotateX(-Math.PI * 0.5);
+			var texture = new THREE.TextureLoader().load( 'images/mw.jpg' ); // TextureLoader may have problems in IPhone/Chrome
+			var planeMaterial = new THREE.MeshLambertMaterial( { map: texture, side: THREE.DoubleSide} );
+			
+			plane1 = new THREE.Mesh(cylinderGeometry, planeMaterial);
+			plane1.receiveShadow = true;
+			plane1.position.set(0,0,0);
+			plane1.visible = true;
+			scene.add(plane1);			
+			
+			// Spheres to see distance
+			const material = new THREE.MeshBasicMaterial({
+				color: 0xffffff, // blanco
+				transparent: true,
+				opacity: 0.15 // muy transparente
+			});
+			
+			const sphere1Geometry = new THREE.SphereGeometry(100, 32, 32);
+			const sphere1 = new THREE.Mesh(sphere1Geometry, material);
+			scene.add(sphere1);
+			
+			const sphere2Geometry = new THREE.SphereGeometry(300, 32, 32);
+			const sphere2 = new THREE.Mesh(sphere2Geometry, material);
+			scene.add(sphere2);
+			
+			const centerPoint = new THREE.Vector3(374.3, 605.5, -279.8);
+			
+			const sphere3Geometry = new THREE.SphereGeometry(100, 32, 32);
+			const sphere3 = new THREE.Mesh(sphere3Geometry, material);
+			sphere3.position.copy(centerPoint);
+			scene.add(sphere3);
+
+			const sphere4Geometry = new THREE.SphereGeometry(300, 32, 32);
+			const sphere4 = new THREE.Mesh(sphere4Geometry, material);
+			sphere4.position.copy(centerPoint);
+			scene.add(sphere4);
+			
+			// Load the orbits file for scene 1
+			var loader = new THREE.FileLoader();
+			loader.load(
+				// resource URL: the data can be a regular file or a php script that retrieves the data 
+				//'readFile.php',
+				'data/coordinates.json',
+	
+				// onLoad callback: this function is called AFTER the data is fully loaded
+				function ( data ) {
+					//console.log( data ) // when debugging: output the text to the console
+					// Convert the data from JSON format to store it as a 2D Javascript array
+					// that contains all the information for the satellite paths.
+					// The array info_coord[i][j] is like a 2D table, where the 7 columns (j) are:
+					// "satellite_id, name, x_position_at_time, y_position_at_time, z_position_at_time, distance, M_v"
+					// and the rows (i) contain the information for different satellites.
+					info_coord = JSON.parse(data);
+				
+					// Loop for each element in the 'galaxies' array, that is every satellite galaxy
+					for (var i = 0; i < galaxies.length; i++) {
+						var galaxy = galaxies[i];
+						galaxy.position.x = info_coord[i][2];
+						galaxy.position.y = info_coord[i][3];
+						galaxy.position.z = info_coord[i][4];
+						// Scale the name of the galaxy according to camera position
+						var scaleFactor = 10;
+						var sprite = galaxy.children[0];
+						var distance = camera.position.distanceTo( galaxy.position );
+						//var scale = (distance * 0.05 + 1);
+						//var scale = 500 / (distance * 0.05 + 1);
+						var scale = scaleVector.subVectors(galaxy.position, camera.position).length() / scaleFactor;
+						sprite.scale.set(scale, scale, 1);
+					};
+				},			
+	
+				// onError callback: this function is called in case of error while loading the data
+				function ( err ) {
+					// Print information to the web browser console
+					console.error( 'An error may have happened' );
+				}
+			);						
+	
+			// Add the event listener to manage the case when the web browser window is resized (or phone is rotated)
+			window.addEventListener( 'resize', onWindowResize, false );
+		} // end of init()
+	
+		// This function is called when the web browser window is resized
+		function onWindowResize() {
+			camera.aspect = window.innerWidth / window.innerHeight;
+			camera.updateProjectionMatrix();
+			renderer.setSize( window.innerWidth, window.innerHeight );
+		}
+	
+		// This function is called at every animation frame
+		function animate() {
+	
+			requestAnimationFrame(animate); // Usual ThreeJS function
+				
+			// Proceed only if there is orbit information loaded
+			if(info_coord != null){
+				// Empty the "loading" text
+				loadingText.innerHTML = ' ';
+
+				// Update the 'time' text on the screen. 
+				timeText.innerHTML   = 'Present time';
+				
+				// Camera always looks at the center of the Milky Way (general scene)
+				//camera.lookAt(scene.position);
+				// Update the orbit controls (via mouse/touch)
+				controls.update(0.25);
+			}
+	
+			render();
+		}
+	
+		function render() {
+			renderer.render(scene, camera);
+		}
+		
+		var checkbox0 = document.getElementById("select");
+		checkbox0.addEventListener("click", function() {
+			for (var i = 0; i < galaxies.length; i++) {
+				galaxies[i].visible = checkbox0.checked;
+				galaxies[98].visible = true;
+				galaxies[127].visible = true;
+			}
+		});
+		
+		var checkbox1 = document.getElementById("AndI");
+		checkbox1.addEventListener("click", function() {
+			var object11 = scene.getObjectByName( "AndI" );
+			object11.visible = checkbox1.checked;
+		});
+
+		var checkbox2 = document.getElementById("AndII");
+		checkbox2.addEventListener("click", function() {
+			var object21 = scene.getObjectByName( "AndII" );
+			object21.visible = !object21.visible;
+
+		});
+
+		var checkbox3 = document.getElementById("AndIII");
+		checkbox3.addEventListener("click", function() {
+			var object31 = scene.getObjectByName( "AndIII" );
+			object31.visible = !object31.visible;
+
+		});
+		
+		var checkbox4 = document.getElementById("AndIX");
+		checkbox4.addEventListener("click", function() {
+			var object41 = scene.getObjectByName( "AndIX" );
+			object41.visible = !object41.visible;
+		});
+		
+		var checkbox5 = document.getElementById("AndV");
+		checkbox5.addEventListener("click", function() {
+			var object51 = scene.getObjectByName( "AndV" );
+			object51.visible = !object51.visible;
+		});
+		
+		var checkbox6 = document.getElementById("AndVI");
+		checkbox6.addEventListener("click", function() {
+			var object61 = scene.getObjectByName( "AndVI" );
+			object61.visible = !object61.visible;
+		});
+		
+		var checkbox7 = document.getElementById("AndVII");
+		checkbox7.addEventListener("click", function() {
+			var object71 = scene.getObjectByName( "AndVII" );
+			object71.visible = !object71.visible;
+		});
+		
+		var checkbox8 = document.getElementById("AndX");
+		checkbox8.addEventListener("click", function() {
+			var object81 = scene.getObjectByName( "AndX" );
+			object81.visible = !object81.visible;
+		});
+		
+		var checkbox9 = document.getElementById("AndXI");
+		checkbox9.addEventListener("click", function() {
+			var object91 = scene.getObjectByName( "AndXI" );
+			object91.visible = !object91.visible;
+		});
+		
+		var checkbox10 = document.getElementById("AndXII");
+		checkbox10.addEventListener("click", function() {
+			var object101 = scene.getObjectByName( "AndXII" );
+			object101.visible = !object101.visible;
+		});
+		
+		var checkbox11 = document.getElementById("AndXIII");
+		checkbox11.addEventListener("click", function() {
+			var object111 = scene.getObjectByName( "AndXIII" );
+			object111.visible = !object111.visible;
+		});
+		
+		var checkbox12 = document.getElementById("AndXIV");
+		checkbox12.addEventListener("click", function() {
+			var object121 = scene.getObjectByName( "AndXIV" );
+			object121.visible = !object121.visible;
+		});
+		
+		var checkbox13 = document.getElementById("AndXIX");
+		checkbox13.addEventListener("click", function() {
+			var object131 = scene.getObjectByName( "AndXIX" );
+			object131.visible = !object131.visible;
+		});
+		
+		var checkbox14 = document.getElementById("AndXV");
+		checkbox14.addEventListener("click", function() {
+			var object141 = scene.getObjectByName( "AndXV" );
+			object141.visible = !object141.visible;
+		});
+		
+		var checkbox15 = document.getElementById("AndXVI");
+		checkbox15.addEventListener("click", function() {
+			var object151 = scene.getObjectByName( "AndXVI" );
+			object151.visible = !object151.visible;
+		});
+		
+		var checkbox16 = document.getElementById("AndXVII");
+		checkbox16.addEventListener("click", function() {
+			var object161 = scene.getObjectByName( "AndXVII" );
+			object161.visible = !object161.visible;
+		});
+		
+		var checkbox17 = document.getElementById("AndXVIII");
+		checkbox17.addEventListener("click", function() {
+			var object171 = scene.getObjectByName( "AndXVIII" );
+			object171.visible = !object171.visible;
+		});
+		
+		var checkbox18 = document.getElementById("AndXX");
+		checkbox18.addEventListener("click", function() {
+			var object181 = scene.getObjectByName( "AndXX" );
+			object181.visible = !object181.visible;
+		});
+		
+		var checkbox19 = document.getElementById("AndXXI");
+		checkbox19.addEventListener("click", function() {
+			var object191 = scene.getObjectByName( "AndXXI" );
+			object191.visible = !object191.visible;
+		});
+		
+		var checkbox20 = document.getElementById("AndXXII");
+		checkbox20.addEventListener("click", function() {
+			var object201 = scene.getObjectByName( "AndXXII" );
+			object201.visible = !object201.visible;
+		});
+		
+		var checkbox21 = document.getElementById("AndXXIII");
+		checkbox21.addEventListener("click", function() {
+			var object211 = scene.getObjectByName( "AndXXIII" );
+			object211.visible = !object211.visible;
+		});
+		
+		var checkbox22 = document.getElementById("AndXXIV");
+		checkbox22.addEventListener("click", function() {
+			var object221 = scene.getObjectByName( "AndXXIV" );
+			object221.visible = !object221.visible;
+		});
+		
+		var checkbox23 = document.getElementById("AndXXIX");
+		checkbox23.addEventListener("click", function() {
+			var object231 = scene.getObjectByName( "AndXXIX" );
+			object231.visible = !object231.visible;
+		});
+		
+		var checkbox24 = document.getElementById("AndXXV");
+		checkbox24.addEventListener("click", function() {
+			var object241 = scene.getObjectByName( "AndXXV" );
+			object241.visible = !object241.visible;
+		});
+		
+		var checkbox25 = document.getElementById("AndXXVI");
+		checkbox25.addEventListener("click", function() {
+			var object251 = scene.getObjectByName( "AndXXVI" );
+			object251.visible = !object251.visible;
+		});
+		
+		var checkbox26 = document.getElementById("AndXXVII");
+		checkbox26.addEventListener("click", function() {
+			var object261 = scene.getObjectByName( "AndXXVII" );
+			object261.visible = !object261.visible;
+		});
+		
+		var checkbox27 = document.getElementById("AndXXVIII");
+		checkbox27.addEventListener("click", function() {
+			var object271 = scene.getObjectByName( "AndXXVIII" );
+			object271.visible = !object271.visible;
+		});
+		
+		var checkbox28 = document.getElementById("AndXXX");
+		checkbox28.addEventListener("click", function() {
+			var object281 = scene.getObjectByName( "AndXXX" );
+			object281.visible = !object281.visible;
+		});
+		
+		var checkbox29 = document.getElementById("AndXXXI");
+		checkbox29.addEventListener("click", function() {
+			var object291 = scene.getObjectByName( "AndXXXI" );
+			object291.visible = !object291.visible;
+		});
+		
+		var checkbox30 = document.getElementById("AndXXXII");
+		checkbox30.addEventListener("click", function() {
+			var object301 = scene.getObjectByName( "AndXXXII" );
+			object301.visible = !object301.visible;
+		});
+		
+		var checkbox31 = document.getElementById("AndXXXIII");
+		checkbox31.addEventListener("click", function() {
+			var object311 = scene.getObjectByName( "AndXXXIII" );
+			object311.visible = !object311.visible;
+		});
+		
+		var checkbox32 = document.getElementById("Antlia");
+		checkbox32.addEventListener("click", function() {
+			var object321 = scene.getObjectByName( "Antlia" );
+			object321.visible = !object321.visible;
+		});
+		
+		var checkbox33 = document.getElementById("Antlia2");
+		checkbox33.addEventListener("click", function() {
+			var object331 = scene.getObjectByName( "Antlia2" );
+			object331.visible = !object331.visible;
+		});
+		
+		var checkbox34 = document.getElementById("AntliaB");
+		checkbox34.addEventListener("click", function() {
+			var object341 = scene.getObjectByName( "AntliaB" );
+			object341.visible = !object341.visible;
+		});
+		
+		var checkbox35 = document.getElementById("Aquarius");
+		checkbox35.addEventListener("click", function() {
+			var object351 = scene.getObjectByName( "Aquarius" );
+			object351.visible = !object351.visible;
+		});
+		
+		var checkbox36 = document.getElementById("Aquarius2");
+		checkbox36.addEventListener("click", function() {
+			var object361 = scene.getObjectByName( "Aquarius2" );
+			object361.visible = !object361.visible;
+		});
+		
+		var checkbox37 = document.getElementById("Bootes(1)");
+		checkbox37.addEventListener("click", function() {
+			var object371 = scene.getObjectByName( "Bootes(1)" );
+			object371.visible = !object371.visible;
+		});
+		
+		var checkbox38 = document.getElementById("Bootes2");
+		checkbox38.addEventListener("click", function() {
+			var object381 = scene.getObjectByName( "Bootes2" );
+			object381.visible = !object381.visible;
+		});
+		
+		var checkbox39 = document.getElementById("Bootes3");
+		checkbox39.addEventListener("click", function() {
+			var object391 = scene.getObjectByName( "Bootes3" );
+			object391.visible = !object391.visible;
+		});
+		
+		var checkbox40 = document.getElementById("Bootes4");
+		checkbox40.addEventListener("click", function() {
+			var object401 = scene.getObjectByName( "Bootes4" );
+			object401.visible = !object401.visible;
+		});
+		
+		var checkbox41 = document.getElementById("CanesVenatici(1)");
+		checkbox41.addEventListener("click", function() {
+			var object411 = scene.getObjectByName( "CanesVenatici(1)" );
+			object411.visible = !object411.visible;
+		});
+		
+		var checkbox42 = document.getElementById("CanesVenatici2");
+		checkbox42.addEventListener("click", function() {
+			var object421 = scene.getObjectByName( "CanesVenatici2" );
+			object421.visible = !object421.visible;
+		});
+		
+		var checkbox43 = document.getElementById("CanisMajor");
+		checkbox43.addEventListener("click", function() {
+			var object431 = scene.getObjectByName( "CanisMajor" );
+			object431.visible = !object431.visible;
+		});
+		
+		var checkbox44 = document.getElementById("Carina");
+		checkbox44.addEventListener("click", function() {
+			var object441 = scene.getObjectByName( "Carina" );
+			object441.visible = !object441.visible;
+		});
+		
+		var checkbox45 = document.getElementById("Carina2");
+		checkbox45.addEventListener("click", function() {
+			var object451 = scene.getObjectByName( "Carina2" );
+			object451.visible = !object451.visible;
+		});
+		
+		var checkbox46 = document.getElementById("Carina3");
+		checkbox46.addEventListener("click", function() {
+			var object461 = scene.getObjectByName( "Carina3" );
+			object461.visible = !object461.visible;
+		});
+		
+		var checkbox47 = document.getElementById("Centaurus1");
+		checkbox47.addEventListener("click", function() {
+			var object471 = scene.getObjectByName( "Centaurus1" );
+			object471.visible = !object471.visible;
+		});
+		
+		var checkbox48 = document.getElementById("Cetus");
+		checkbox48.addEventListener("click", function() {
+			var object481 = scene.getObjectByName( "Cetus" );
+			object481.visible = !object481.visible;
+		});
+		
+		var checkbox49 = document.getElementById("Cetus2");
+		checkbox49.addEventListener("click", function() {
+			var object491 = scene.getObjectByName( "Cetus2" );
+			object491.visible = !object491.visible;
+		});
+		
+		var checkbox50 = document.getElementById("Cetus3");
+		checkbox50.addEventListener("click", function() {
+			var object501 = scene.getObjectByName( "Cetus3" );
+			object501.visible = !object501.visible;
+		});
+		
+		var checkbox51 = document.getElementById("Columba1");
+		checkbox51.addEventListener("click", function() {
+			var object511 = scene.getObjectByName( "Columba1" );
+			object511.visible = !object511.visible;
+		});
+		
+		var checkbox01 = document.getElementById("DDO190");
+		checkbox01.addEventListener("click", function() {
+			var object011 = scene.getObjectByName( "DDO190" );
+			object011.visible = checkbox01.checked;
+		});
+
+		var checkbox02 = document.getElementById("DDO99");
+		checkbox02.addEventListener("click", function() {
+			var object021 = scene.getObjectByName( "DDO99" );
+			object021.visible = !object021.visible;
+
+		});
+
+		var checkbox03 = document.getElementById("DESJ0225+0304");
+		checkbox03.addEventListener("click", function() {
+			var object031 = scene.getObjectByName( "DESJ0225+0304" );
+			object031.visible = !object031.visible;
+
+		});
+		
+		var checkbox04 = document.getElementById("Draco");
+		checkbox04.addEventListener("click", function() {
+			var object041 = scene.getObjectByName( "Draco" );
+			object041.visible = !object041.visible;
+		});
+		
+		var checkbox05 = document.getElementById("Draco2");
+		checkbox05.addEventListener("click", function() {
+			var object051 = scene.getObjectByName( "Draco2" );
+			object051.visible = !object051.visible;
+		});
+		
+		var checkbox06 = document.getElementById("Eridanus2");
+		checkbox06.addEventListener("click", function() {
+			var object061 = scene.getObjectByName( "Eridanus2" );
+			object061.visible = !object061.visible;
+		});
+		
+		var checkbox07 = document.getElementById("Eridanus3");
+		checkbox07.addEventListener("click", function() {
+			var object071 = scene.getObjectByName( "Eridanus3" );
+			object071.visible = !object071.visible;
+		});
+		
+		var checkbox08 = document.getElementById("ESO294-G010");
+		checkbox08.addEventListener("click", function() {
+			var object081 = scene.getObjectByName( "ESO294-G010" );
+			object081.visible = !object081.visible;
+		});
+		
+		var checkbox09 = document.getElementById("ESO410-G005");
+		checkbox09.addEventListener("click", function() {
+			var object091 = scene.getObjectByName( "ESO410-G005" );
+			object091.visible = !object091.visible;
+		});
+		
+		var checkbox010 = document.getElementById("Fornax");
+		checkbox010.addEventListener("click", function() {
+			var object0101 = scene.getObjectByName( "Fornax" );
+			object0101.visible = !object0101.visible;
+		});
+		
+		var checkbox011 = document.getElementById("GR8");
+		checkbox011.addEventListener("click", function() {
+			var object0111 = scene.getObjectByName( "GR8" );
+			object0111.visible = !object0111.visible;
+		});
+		
+		var checkbox012 = document.getElementById("Grus1");
+		checkbox012.addEventListener("click", function() {
+			var object0121 = scene.getObjectByName( "Grus1" );
+			object0121.visible = !object0121.visible;
+		});
+		
+		var checkbox013 = document.getElementById("Grus2");
+		checkbox013.addEventListener("click", function() {
+			var object0131 = scene.getObjectByName( "Grus2" );
+			object0131.visible = !object0131.visible;
+		});
+		
+		var checkbox014 = document.getElementById("Hercules");
+		checkbox014.addEventListener("click", function() {
+			var object0141 = scene.getObjectByName( "Hercules" );
+			object0141.visible = !object0141.visible;
+		});
+		
+		var checkbox015 = document.getElementById("HIZSS3(A)");
+		checkbox015.addEventListener("click", function() {
+			var object0151 = scene.getObjectByName( "HIZSS3(A)" );
+			object0151.visible = !object0151.visible;
+		});
+		
+		var checkbox016 = document.getElementById("HIZSS3B");
+		checkbox016.addEventListener("click", function() {
+			var object0161 = scene.getObjectByName( "HIZSS3B" );
+			object0161.visible = !object0161.visible;
+		});
+		
+		var checkbox017 = document.getElementById("Horologium1");
+		checkbox017.addEventListener("click", function() {
+			var object0171 = scene.getObjectByName( "Horologium1" );
+			object0171.visible = !object0171.visible;
+		});
+		
+		var checkbox018 = document.getElementById("Horologium2");
+		checkbox018.addEventListener("click", function() {
+			var object0181 = scene.getObjectByName( "Horologium2" );
+			object0181.visible = !object0181.visible;
+		});
+		
+		var checkbox019 = document.getElementById("Hydra1");
+		checkbox019.addEventListener("click", function() {
+			var object0191 = scene.getObjectByName( "Hydra1" );
+			object0191.visible = !object0191.visible;
+		});
+		
+		var checkbox020 = document.getElementById("Hydra2");
+		checkbox020.addEventListener("click", function() {
+			var object0201 = scene.getObjectByName( "Hydra2" );
+			object0201.visible = !object0201.visible;
+		});
+		
+		var checkbox021 = document.getElementById("Hydrus1");
+		checkbox021.addEventListener("click", function() {
+			var object0211 = scene.getObjectByName( "Hydrus1" );
+			object0211.visible = !object0211.visible;
+		});
+		
+		var checkbox022 = document.getElementById("IC10");
+		checkbox022.addEventListener("click", function() {
+			var object0221 = scene.getObjectByName( "IC10" );
+			object0221.visible = !object0221.visible;
+		});
+		
+		var checkbox023 = document.getElementById("IC1613");
+		checkbox023.addEventListener("click", function() {
+			var object0231 = scene.getObjectByName( "IC1613" );
+			object0231.visible = !object0231.visible;
+		});
+		
+		var checkbox024 = document.getElementById("IC3104");
+		checkbox024.addEventListener("click", function() {
+			var object0241 = scene.getObjectByName( "IC3104" );
+			object0241.visible = !object0241.visible;
+		});
+		
+		var checkbox025 = document.getElementById("IC4662");
+		checkbox025.addEventListener("click", function() {
+			var object0251 = scene.getObjectByName( "IC4662" );
+			object0251.visible = !object0251.visible;
+		});
+		
+		var checkbox026 = document.getElementById("IC5152");
+		checkbox026.addEventListener("click", function() {
+			var object0261 = scene.getObjectByName( "IC5152" );
+			object0261.visible = !object0261.visible;
+		});
+		
+		var checkbox027 = document.getElementById("Indus1");
+		checkbox027.addEventListener("click", function() {
+			var object0271 = scene.getObjectByName( "Indus1" );
+			object0271.visible = !object0271.visible;
+		});
+		
+		var checkbox028 = document.getElementById("Indus2");
+		checkbox028.addEventListener("click", function() {
+			var object0281 = scene.getObjectByName( "Indus2" );
+			object0281.visible = !object0281.visible;
+		});
+		
+		var checkbox029 = document.getElementById("KK258");
+		checkbox029.addEventListener("click", function() {
+			var object0291 = scene.getObjectByName( "KK258" );
+			object0291.visible = !object0291.visible;
+		});
+		
+		var checkbox030 = document.getElementById("KKH86");
+		checkbox030.addEventListener("click", function() {
+			var object0301 = scene.getObjectByName( "KKH86" );
+			object0301.visible = !object0301.visible;
+		});
+		
+		var checkbox031 = document.getElementById("KKH98");
+		checkbox031.addEventListener("click", function() {
+			var object0311 = scene.getObjectByName( "KKH98" );
+			object0311.visible = !object0311.visible;
+		});
+		
+		var checkbox032 = document.getElementById("KKR25");
+		checkbox032.addEventListener("click", function() {
+			var object0321 = scene.getObjectByName( "KKR25" );
+			object0321.visible = !object0321.visible;
+		});
+		
+		var checkbox033 = document.getElementById("KKR3");
+		checkbox033.addEventListener("click", function() {
+			var object0331 = scene.getObjectByName( "KKR3" );
+			object0331.visible = !object0331.visible;
+		});
+		
+		var checkbox034 = document.getElementById("KKs3");
+		checkbox034.addEventListener("click", function() {
+			var object0341 = scene.getObjectByName( "KKs3" );
+			object0341.visible = !object0341.visible;
+		});
+		
+		var checkbox035 = document.getElementById("Leo1");
+		checkbox035.addEventListener("click", function() {
+			var object0351 = scene.getObjectByName( "Leo1" );
+			object0351.visible = !object0351.visible;
+		});
+		
+		var checkbox036 = document.getElementById("Leo2");
+		checkbox036.addEventListener("click", function() {
+			var object0361 = scene.getObjectByName( "Leo2" );
+			object0361.visible = !object0361.visible;
+		});
+		
+		var checkbox037 = document.getElementById("Leo4");
+		checkbox037.addEventListener("click", function() {
+			var object0371 = scene.getObjectByName( "Leo4" );
+			object0371.visible = !object0371.visible;
+		});
+		
+		var checkbox038 = document.getElementById("Leo5");
+		checkbox038.addEventListener("click", function() {
+			var object0381 = scene.getObjectByName( "Leo5" );
+			object0381.visible = !object0381.visible;
+		});
+		
+		var checkbox039 = document.getElementById("LeoA");
+		checkbox039.addEventListener("click", function() {
+			var object0391 = scene.getObjectByName( "LeoA" );
+			object0391.visible = !object0391.visible;
+		});
+		
+		var checkbox040 = document.getElementById("LeoP");
+		checkbox040.addEventListener("click", function() {
+			var object0401 = scene.getObjectByName( "LeoP" );
+			object0401.visible = !object0401.visible;
+		});
+		
+		var checkbox041 = document.getElementById("LeoT");
+		checkbox041.addEventListener("click", function() {
+			var object0411 = scene.getObjectByName( "LeoT" );
+			object0411.visible = !object0411.visible;
+		});
+		
+		var checkbox042 = document.getElementById("LGS3");
+		checkbox042.addEventListener("click", function() {
+			var object0421 = scene.getObjectByName( "LGS3" );
+			object0421.visible = !object0421.visible;
+		});
+		
+		var checkbox043 = document.getElementById("LMC");
+		checkbox043.addEventListener("click", function() {
+			var object0431 = scene.getObjectByName( "LMC" );
+			object0431.visible = !object0431.visible;
+		});
+		
+		var checkbox045 = document.getElementById("M32");
+		checkbox045.addEventListener("click", function() {
+			var object0451 = scene.getObjectByName( "M32" );
+			object0451.visible = !object0451.visible;
+		});
+		
+		var checkbox046 = document.getElementById("NGC147");
+		checkbox046.addEventListener("click", function() {
+			var object0461 = scene.getObjectByName( "NGC147" );
+			object0461.visible = !object0461.visible;
+		});
+		
+		var checkbox047 = document.getElementById("NGC185");
+		checkbox047.addEventListener("click", function() {
+			var object0471 = scene.getObjectByName( "NGC185" );
+			object0471.visible = !object0471.visible;
+		});
+		
+		var checkbox048 = document.getElementById("NGC205");
+		checkbox048.addEventListener("click", function() {
+			var object0481 = scene.getObjectByName( "NGC205" );
+			object0481.visible = !object0481.visible;
+		});
+		
+		var checkbox049 = document.getElementById("NGC300");
+		checkbox049.addEventListener("click", function() {
+			var object0491 = scene.getObjectByName( "NGC300" );
+			object0491.visible = !object0491.visible;
+		});
+		
+		var checkbox050 = document.getElementById("NGC3109");
+		checkbox050.addEventListener("click", function() {
+			var object0501 = scene.getObjectByName( "NGC3109" );
+			object0501.visible = !object0501.visible;
+		});
+		
+		var checkbox051 = document.getElementById("NGC4163");
+		checkbox051.addEventListener("click", function() {
+			var object0511 = scene.getObjectByName( "NGC4163" );
+			object0511.visible = !object0511.visible;
+		});
+		
+		var checkbox001 = document.getElementById("NGC55");
+		checkbox001.addEventListener("click", function() {
+			var object0011 = scene.getObjectByName( "NGC55" );
+			object0011.visible = checkbox001.checked;
+		});
+
+		var checkbox002 = document.getElementById("NGC6822");
+		checkbox002.addEventListener("click", function() {
+			var object0021 = scene.getObjectByName( "NGC6822" );
+			object0021.visible = !object0021.visible;
+
+		});
+
+		var checkbox003 = document.getElementById("Pegasus3");
+		checkbox003.addEventListener("click", function() {
+			var object0031 = scene.getObjectByName( "Pegasus3" );
+			object0031.visible = !object0031.visible;
+
+		});
+		
+		var checkbox004 = document.getElementById("PegasusdIrr");
+		checkbox004.addEventListener("click", function() {
+			var object0041 = scene.getObjectByName( "PegasusdIrr" );
+			object0041.visible = !object0041.visible;
+		});
+		
+		var checkbox005 = document.getElementById("Phoenix");
+		checkbox005.addEventListener("click", function() {
+			var object0051 = scene.getObjectByName( "Phoenix" );
+			object0051.visible = !object0051.visible;
+		});
+		
+		var checkbox006 = document.getElementById("Phoenix2");
+		checkbox006.addEventListener("click", function() {
+			var object0061 = scene.getObjectByName( "Phoenix2" );
+			object0061.visible = !object0061.visible;
+		});
+		
+		var checkbox007 = document.getElementById("Pictor1");
+		checkbox007.addEventListener("click", function() {
+			var object0071 = scene.getObjectByName( "Pictor1" );
+			object0071.visible = !object0071.visible;
+		});
+		
+		var checkbox008 = document.getElementById("Pictor2");
+		checkbox008.addEventListener("click", function() {
+			var object0081 = scene.getObjectByName( "Pictor2" );
+			object0081.visible = !object0081.visible;
+		});
+		
+		var checkbox009 = document.getElementById("Pisces2");
+		checkbox009.addEventListener("click", function() {
+			var object0091 = scene.getObjectByName( "Pisces2" );
+			object0091.visible = !object0091.visible;
+		});
+		
+		var checkbox0010 = document.getElementById("Reticulum2");
+		checkbox0010.addEventListener("click", function() {
+			var object00101 = scene.getObjectByName( "Reticulum2" );
+			object00101.visible = !object00101.visible;
+		});
+		
+		var checkbox0011 = document.getElementById("Reticulum3");
+		checkbox0011.addEventListener("click", function() {
+			var object00111 = scene.getObjectByName( "Reticulum3" );
+			object00111.visible = !object00111.visible;
+		});
+		
+		var checkbox0012 = document.getElementById("Sagittarius2");
+		checkbox0012.addEventListener("click", function() {
+			var object00121 = scene.getObjectByName( "Sagittarius2" );
+			object00121.visible = !object00121.visible;
+		});
+		
+		var checkbox0013 = document.getElementById("SagittariusdIrr");
+		checkbox0013.addEventListener("click", function() {
+			var object00131 = scene.getObjectByName( "SagittariusdIrr" );
+			object00131.visible = !object00131.visible;
+		});
+		
+		var checkbox0014 = document.getElementById("SagittariusdSph");
+		checkbox0014.addEventListener("click", function() {
+			var object00141 = scene.getObjectByName( "SagittariusdSph" );
+			object00141.visible = !object00141.visible;
+		});
+		
+		var checkbox0015 = document.getElementById("Sculptor");
+		checkbox0015.addEventListener("click", function() {
+			var object00151 = scene.getObjectByName( "Sculptor" );
+			object00151.visible = !object00151.visible;
+		});
+		
+		var checkbox0016 = document.getElementById("Segue(1)");
+		checkbox0016.addEventListener("click", function() {
+			var object00161 = scene.getObjectByName( "Segue(1)" );
+			object00161.visible = !object00161.visible;
+		});
+		
+		var checkbox0017 = document.getElementById("Segue2");
+		checkbox0017.addEventListener("click", function() {
+			var object00171 = scene.getObjectByName( "Segue2" );
+			object00171.visible = !object00171.visible;
+		});
+		
+		var checkbox0018 = document.getElementById("Sextans(1)");
+		checkbox0018.addEventListener("click", function() {
+			var object00181 = scene.getObjectByName( "Sextans(1)" );
+			object00181.visible = !object00181.visible;
+		});
+		
+		var checkbox0019 = document.getElementById("SextansA");
+		checkbox0019.addEventListener("click", function() {
+			var object00191 = scene.getObjectByName( "SextansA" );
+			object00191.visible = !object00191.visible;
+		});
+		
+		var checkbox0020 = document.getElementById("SextansB");
+		checkbox0020.addEventListener("click", function() {
+			var object00201 = scene.getObjectByName( "SextansB" );
+			object00201.visible = !object00201.visible;
+		});
+		
+		var checkbox0021 = document.getElementById("SMC");
+		checkbox0021.addEventListener("click", function() {
+			var object00211 = scene.getObjectByName( "SMC" );
+			object00211.visible = !object00211.visible;
+		});
+		
+		var checkbox0023 = document.getElementById("Triangulum2");
+		checkbox0023.addEventListener("click", function() {
+			var object00231 = scene.getObjectByName( "Triangulum2" );
+			object00231.visible = !object00231.visible;
+		});
+		
+		var checkbox0024 = document.getElementById("Tucana");
+		checkbox0024.addEventListener("click", function() {
+			var object00241 = scene.getObjectByName( "Tucana" );
+			object00241.visible = !object00241.visible;
+		});
+		
+		var checkbox0025 = document.getElementById("Tucana2");
+		checkbox0025.addEventListener("click", function() {
+			var object00251 = scene.getObjectByName( "Tucana2" );
+			object00251.visible = !object00251.visible;
+		});
+		
+		var checkbox0026 = document.getElementById("Tucana3");
+		checkbox0026.addEventListener("click", function() {
+			var object00261 = scene.getObjectByName( "Tucana3" );
+			object00261.visible = !object00261.visible;
+		});
+		
+		var checkbox0027 = document.getElementById("Tucana4");
+		checkbox0027.addEventListener("click", function() {
+			var object00271 = scene.getObjectByName( "Tucana4" );
+			object00271.visible = !object00271.visible;
+		});
+		
+		var checkbox0028 = document.getElementById("Tucana5");
+		checkbox0028.addEventListener("click", function() {
+			var object00281 = scene.getObjectByName( "Tucana5" );
+			object00281.visible = !object00281.visible;
+		});
+		
+		var checkbox0029 = document.getElementById("UGC4879");
+		checkbox0029.addEventListener("click", function() {
+			var object00291 = scene.getObjectByName( "UGC4879" );
+			object00291.visible = !object00291.visible;
+		});
+		
+		var checkbox0030 = document.getElementById("UGC8508");
+		checkbox0030.addEventListener("click", function() {
+			var object00301 = scene.getObjectByName( "UGC8508" );
+			object00301.visible = !object00301.visible;
+		});
+		
+		var checkbox0031 = document.getElementById("UGC9128");
+		checkbox0031.addEventListener("click", function() {
+			var object00311 = scene.getObjectByName( "UGC9128" );
+			object00311.visible = !object00311.visible;
+		});
+		
+		var checkbox0032 = document.getElementById("UGCA86");
+		checkbox0032.addEventListener("click", function() {
+			var object00321 = scene.getObjectByName( "UGCA86" );
+			object00321.visible = !object00321.visible;
+		});
+		
+		var checkbox0033 = document.getElementById("UKS2323-326");
+		checkbox0033.addEventListener("click", function() {
+			var object00331 = scene.getObjectByName( "UKS2323-326" );
+			object00331.visible = !object00331.visible;
+		});
+		
+		var checkbox0034 = document.getElementById("UrsaMajor(1)");
+		checkbox0034.addEventListener("click", function() {
+			var object00341 = scene.getObjectByName( "UrsaMajor(1)" );
+			object00341.visible = !object00341.visible;
+		});
+		
+		var checkbox0035 = document.getElementById("UrsaMajor2");
+		checkbox0035.addEventListener("click", function() {
+			var object00351 = scene.getObjectByName( "UrsaMajor2" );
+			object00351.visible = !object00351.visible;
+		});
+		
+		var checkbox0036 = document.getElementById("UrsaMinor");
+		checkbox0036.addEventListener("click", function() {
+			var object00361 = scene.getObjectByName( "UrsaMinor" );
+			object00361.visible = !object00361.visible;
+		});
+		
+		var checkbox0037 = document.getElementById("Virgo1");
+		checkbox0037.addEventListener("click", function() {
+			var object00371 = scene.getObjectByName( "Virgo1" );
+			object00371.visible = !object00371.visible;
+		});
+		
+		var checkbox0038 = document.getElementById("Willman1");
+		checkbox0038.addEventListener("click", function() {
+			var object00381 = scene.getObjectByName( "Willman1" );
+			object00381.visible = !object00381.visible;
+		});
+		
+		var checkbox0039 = document.getElementById("WLM");
+		checkbox0039.addEventListener("click", function() {
+			var object00391 = scene.getObjectByName( "WLM" );
+			object00391.visible = !object00391.visible;
+		});
+		
+		const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+		checkboxes.forEach(function(checkbox) {
+			checkbox.style.backgroundColor = 'black';
+		});
+		
+
+		var showGalaxyNamesCheckbox = document.getElementById('show-galaxy-names');
+		// Add an event listener to handle changes to the checkbox value
+		showGalaxyNamesCheckbox.addEventListener('change', function() {
+			var showGalaxyNames = this.checked;
+			// Loop through all galaxies in the scene and set their name sprite visibility
+			for (var i = 0; i < galaxies.length; i++) {
+				galaxies[i].children[0].visible = showGalaxyNames;
+			}
+		});
+	</script>
+	</body>
+</html>
