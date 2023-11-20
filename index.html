@@ -37,11 +37,9 @@
 	document.oncontextmenu = function(){return false;}
 	</script>
 	
-	<!-- Scenes var -->
+	<!-- Scene var -->
 	<script>
 	var scene;
-	var isOrbit;
-	var isFly;
 	</script>
 	
 	<!-- Expansive menu -->
@@ -81,20 +79,6 @@
 				</div>
 				<span class="nav__label">M31</span>
 			</a>
-			<a href="#" class="nav__link" id="mid_point">
-				<div class="nav__icon-container">
-					<i class="material-icons">dashboard</i>
-				</div>
-				<span class="nav__label">Midpoint</span>
-			</a>
-			<a href="#" class="nav__link" id="free_movement">
-				<div class="nav__icon-container" id="freeIconContainer">
-					<i class="material-icons">language</i>
-				</div>
-				<div class="nav__label" id="freeButton">Orbit Mode</div>
-				<div class="nav__icon-container2">
-				</div>
-			</a>
 			<a href="#" class="nav__link" onclick='reload()'>
 				<script>
 					function reload(){
@@ -123,7 +107,7 @@
 						function toggle(source) {
 							var aInputs = document.getElementsByTagName('input');
 							for (var i=0;i<aInputs.length;i++) {
-								if (aInputs[i] != source && aInputs[i].className == source.className && aInputs[i].id !== "show-galaxy-names") {
+								if (aInputs[i] != source && aInputs[i].className == source.className) {
 									aInputs[i].checked = source.checked;
 								}
 							}
@@ -131,12 +115,6 @@
 					</script> 
 				</div>
 				<span class="nav__label">Select All</span>
-			</a>
-			<a href="#" class="nav__link">
-				<div class="nav__icon-container">
-					<input type="checkbox" id="show-galaxy-names" checked="true" />
-				</div>
-				<span class="nav__label">Show names</span>
 			</a>
 			<a href="#" class="nav__link">
 				<div class="nav__icon-container">
@@ -1145,22 +1123,8 @@
 			</main>
 	</div>
 				
-	<!-- Load latest Threejs library modules from the web. No need to download them by hand (code is based on march 23' version) -->
+	<!-- Load some Threejs library modules from the web. -->
 	<script async src="https://unpkg.com/es-module-shims@1.3.6/dist/es-module-shims.js"></script>
-	<script type="importmap">
-	{
-		"imports": {
-			"three": "https://unpkg.com/three@0.149.0/build/three.module.js",
-			"three/addons/": "https://unpkg.com/three@0.149.0/examples/jsm/"
-		}
-	}
-	</script>
-
-	<!-- Load library to generate screen captures to make videos (not needed for animation) and more -->
-	<script src="threejs/CCapture.all.min.js"></script>
-	<script src="https://cdn.rawgit.com/mrdoob/three.js/r129/build/three.min.js"></script>
-	<script src="https://cdn.rawgit.com/mrdoob/three.js/r129/examples/js/controls/OrbitControls.js"></script>
-	<script src="https://cdn.rawgit.com/mrdoob/three.js/r129/examples/js/controls/FlyControls.js"></script>
 
     <!-- Main script containing the animation -->	
 	<script type="module">
@@ -1169,8 +1133,7 @@
 		milkyway.style.backgroundColor = "darkgrey";
 		
 		// Import functions from Threejs modules
-		import * as THREE from 'three';
-		import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+		import * as THREE from "../modules/three.module.js";
 		import { FlyControls } from "../modules/FlyControls.js";
 		
 		// Declare some variables 
@@ -1224,20 +1187,8 @@
 		instructionsText.style.color = "white";
 		instructionsText.style.top  = 7.5 + '%'; //'px'
 		instructionsText.style.left = 2 + '%'; //'px'
-		instructionsText.innerHTML = "Instructions: drag, scroll, pinch to change view, press 'WASD' to move camera";
+		instructionsText.innerHTML = "Instructions: drag, scroll, pinch to change view, press arrows to move camera";
 		document.getElementById("main-viewport").appendChild(instructionsText);
-		
-		var instructions2Text = document.createElement('div');
-		instructions2Text.style.position = 'absolute';
-		instructions2Text.style.fontFamily = "Courier, Arial, Helvetica, sans-serif";
-		instructions2Text.style.fontSize = 15 + 'px';
-		instructions2Text.style.width = 100;
-		instructions2Text.style.height = 100;
-		instructions2Text.style.color = "white";
-		instructions2Text.style.top  = 12.5 + '%'; //'px'
-		instructions2Text.style.left = 2 + '%'; //'px'
-		instructions2Text.innerHTML = "Note: The viewing center can only be changed in Orbit Mode";
-		document.getElementById("main-viewport").appendChild(instructions2Text);
 		
 		var creditText = document.createElement('div');
 		creditText.style.position = 'absolute';
@@ -1288,132 +1239,36 @@
 			var originalCameraPosition = new THREE.Vector3(0, 180, 10);
 			camera.position.set(0, 180, 10);
 			camera.up.set(0,0,1);
-			// Camera looks at the center of the Milky Way (general scene) when you start the animation.
-			//camera.lookAt(scene.position);
 			
 			renderer = new THREE.WebGLRenderer({ antialias: true });
 			renderer.setPixelRatio( window.devicePixelRatio );
 			renderer.setSize(window.innerWidth, window.innerHeight);
 			document.getElementById("main-viewport").appendChild(renderer.domElement);
 			
-			isOrbit = true;
-			isFly = false;
-			var isM31 = false;
-			var isMW = true;
-			var ismp = false;
-			
-			controls = new OrbitControls(camera, document.getElementById("main-viewport"));
-			controls.enablePan = false;
-			controls.enableDamping = true;
-			controls.dampingFactor = 0.05;
-			controls.update();
+			controls = new FlyControls(camera, renderer.domElement);
+			controls.movementSpeed = 10; // velocidad de movimiento
+			controls.rollSpeed = Math.PI / 180; // velocidad de giro
+			controls.autoForward = false; // movimiento automático hacia adelante
+			controls.dragToLook = true; // mirar hacia la dirección del movimiento
+			controls.object.lookAt(scene.position);
 			
 			var milkyway_container = document.getElementById("milkyway");
 			var m31_container = document.getElementById("m31_galaxy");
-			var free_container = document.getElementById("free_movement");
-			var mid_point_container = document.getElementById("mid_point");
-			var freeButton = document.getElementById("freeButton");
 			
 			milkyway_container.addEventListener('click', function(event) {
-				isM31 = false;
-				isMW = true;
-				ismp = false;
-				if (isOrbit) {
-					camera.position.copy(originalCameraPosition);
-					controls.target.set(0,0,0);
-					controls.update();
-					// Style button
-					milkyway_container.style.backgroundColor = "darkgrey";
-					m31_container.style.backgroundColor = "";
-					mid_point_container.style.backgroundColor = "";
-				} else {
-					// Print information to the web browser
-					alert('You can only chage the view in Orbit Mode');
-				}	
+				camera.position.copy(originalCameraPosition);
+				controls.object.lookAt(scene.position);
+				// Style button
+				milkyway_container.style.backgroundColor = "darkgrey";
+				m31_container.style.backgroundColor = "";
 			});
 			
 			m31_container.addEventListener('click', function(event) {
-				isM31 = true;
-				isMW = false;
-				ismp = false;
-				if (isOrbit) {
-					// Establece la posición y la altura de la cámara
-					camera.position.set(374.3, 805.5, -269.8);
-					// Mira hacia la posición específica
-					controls.target.set(374.3, 605.5, -279.8);
-					// Actualiza los controles OrbitControls
-					controls.update();
-					// Style button
-					milkyway_container.style.backgroundColor = "";
-					m31_container.style.backgroundColor = "darkgrey";
-					mid_point_container.style.backgroundColor = "";
-				} else {
-					// Print information to the web browser
-					alert('You can only chage the view in Orbit Mode');
-				}	
-			});
-
-			mid_point_container.addEventListener('click', function(event) {
-				isM31 = false;
-				isMW = false;
-				ismp = true;
-				if (isOrbit) {
-					// Establece la posición y la altura de la cámara
-					camera.position.set(374.3/2, 605.5/2, -279.8/2+2000);
-					// Mira hacia la posición específica
-					controls.target.set(374.3/2, 605.5/2, -279.8/2);
-					// Actualiza los controles OrbitControls
-					controls.update();
-					// Style button
-					milkyway_container.style.backgroundColor = "";
-					m31_container.style.backgroundColor = "";
-					mid_point_container.style.backgroundColor = "darkgrey";
-				} else {
-					// Print information to the web browser
-					alert('You can only chage the view in Orbit Mode');
-				}	
-			});
-			
-			free_container.addEventListener('click', function(event) {
-				if (isOrbit) {
-                    isOrbit = false;
-                    isFly = true;
-                    controls.dispose();
-                    controls = new FlyControls(camera, renderer.domElement);
-                    controls.movementSpeed = 10;
-                    controls.rollSpeed = Math.PI / 180;
-                    controls.autoForward = false;
-                    controls.dragToLook = true;
-					if (isM31) {
-						controls.object.lookAt(374.3, 605.5, -279.8);
-					} else if (isMW) {
-						controls.object.lookAt(0, 0, 0);
-					} else if (ismp) {
-						controls.object.lookAt(374.3/2, 605.5/2, -279.8/2);
-					}
-					freeButton.innerHTML = "Fly Mode";
-					document.getElementById("freeIconContainer").innerHTML = '<i class="material-icons">flight</i>';
-				} else if (isFly) {
-                    isOrbit = true;
-                    isFly = false;
-                    controls.dispose();
-                    controls = new OrbitControls(camera, document.getElementById("main-viewport"));
-                    controls.enablePan = false;
-                    controls.enableDamping = true;
-                    controls.dampingFactor = 0.05;
-					if (isM31) {
-						controls.target.set(374.3, 605.5, -279.8);
-					} else if (isMW) {
-						controls.target.set(0, 0, 0);
-					} else if (ismp) {
-						controls.target.set(374.3/2, 605.5/2, -279.8/2);
-					}
-                    controls.update();
-					freeButton.innerHTML = "Orbit Mode";
-					document.getElementById("freeIconContainer").innerHTML = '<i class="material-icons">language</i>';
-				} else {
-					console.error( 'An error may have happened' );
-				} 	
+				camera.position.set(374.3, 805.5, -269.8);
+				controls.object.lookAt(374.3, 605.5, -279.8);
+				// Style button
+				milkyway_container.style.backgroundColor = "";
+				m31_container.style.backgroundColor = "darkgrey";	
 			});
 			
 			// Function to create a single satellite galaxy for scene.
@@ -1634,7 +1489,7 @@
 					// Create the M31 (geometry, position, texture, etc) and add it to the scene
 						var cylinderGeometry = new THREE.CylinderGeometry(15,15,0.8,32,32);
 						cylinderGeometry.rotateX(-Math.PI * 0.5);
-						var texture = new THREE.TextureLoader().load( 'images/m31.jpg' ); // TextureLoader may have problems in IPhone/Chrome
+						var texture = new THREE.TextureLoader().load( 'images/mw.jpg' ); // TextureLoader may have problems in IPhone/Chrome
 						var planeMaterial = new THREE.MeshLambertMaterial( { map: texture, side: THREE.DoubleSide} );
 			
 						var plane2 = new THREE.Mesh(cylinderGeometry, planeMaterial);
@@ -1686,7 +1541,7 @@
 					// Create the Triangulum (geometry, position, texture, etc) and add it to the scene
 						var cylinderGeometry = new THREE.CylinderGeometry(15,15,0.8,32,32);
 						cylinderGeometry.rotateX(-Math.PI * 0.5);
-						var texture = new THREE.TextureLoader().load( 'images/tri.jpg' ); // TextureLoader may have problems in IPhone/Chrome
+						var texture = new THREE.TextureLoader().load( 'images/mw.jpg' ); // TextureLoader may have problems in IPhone/Chrome
 						var planeMaterial = new THREE.MeshLambertMaterial( { map: texture, side: THREE.DoubleSide} );
 			
 						var plane3 = new THREE.Mesh(cylinderGeometry, planeMaterial);
@@ -1698,7 +1553,7 @@
 
 			};
 	
-			// Function to create the Sun. Similar steps as before
+			// Function to create the Sun. Similar steps as before (scene 1)
 			var createSun = function(name, radius) {
 				var geom = new THREE.SphereGeometry(radius, 32, 16);
 				var texture = new THREE.TextureLoader().load('images/sunsurface.jpg');
@@ -1988,7 +1843,7 @@
 		function animate() {
 	
 			requestAnimationFrame(animate); // Usual ThreeJS function
-				
+
 			// Proceed only if there is orbit information loaded
 			if(info_coord != null){
 				// Empty the "loading" text
@@ -1997,10 +1852,7 @@
 				// Update the 'time' text on the screen. 
 				timeText.innerHTML   = 'Present time';
 				
-				// Camera always looks at the center of the Milky Way (general scene)
-				//camera.lookAt(scene.position);
-				// Update the orbit controls (via mouse/touch)
-				controls.update(0.25);
+				controls.update(0.5);
 			}
 	
 			render();
@@ -2862,17 +2714,6 @@
 		const checkboxes = document.querySelectorAll('input[type="checkbox"]');
 		checkboxes.forEach(function(checkbox) {
 			checkbox.style.backgroundColor = 'black';
-		});
-		
-
-		var showGalaxyNamesCheckbox = document.getElementById('show-galaxy-names');
-		// Add an event listener to handle changes to the checkbox value
-		showGalaxyNamesCheckbox.addEventListener('change', function() {
-			var showGalaxyNames = this.checked;
-			// Loop through all galaxies in the scene and set their name sprite visibility
-			for (var i = 0; i < galaxies.length; i++) {
-				galaxies[i].children[0].visible = showGalaxyNames;
-			}
 		});
 	</script>
 	</body>
